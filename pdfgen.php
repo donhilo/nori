@@ -13,53 +13,46 @@ TODO:
 
 */
 
+
+//Extiendo la clase para hacer pdfs.
+class noriPDF extends TCPDF {
+	var $artitle;
+
+	public function setHeadText($text) {
+		$this->artitle = $text;		
+	}
+
+	 //Page header
+    public function Header() {
+        // Set font
+        $this->setFontSize(10);
+        // Title
+        $this->Cell(0, 15, $this->artitle, 0, false, 'L', 0, '', 0, false, 'M', 'M');
+    }
+
+    // Page footer
+    public function Footer() {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->setFontSize(10);
+        // Page number
+        $this->Cell(0, 10, 'Página '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+    }
+}
+
 function nori_makePdf($postobj) {
+
+//Configuration for language, you can change the file corresponding to the main language you want to use
+require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
 
 $title = $postobj[0]->post_title;
 //Random file name
 $fileid = rand(10000,99999);
 
-//Load TCPDF
-
-//Configuration for TCPDF
-require_once( NORI_PATH . 'tcpdf_nori.php');
-
-//Configuration for language, you can change the file corresponding to the main language you want to use
-require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
-
-//Tcpdf main file
-require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
-	
-//============================================================+
-// File name   : example_001.php
-// Begin       : 2008-03-04
-// Last Update : 2012-07-25
-//
-// Description : Example 001 for TCPDF class
-//               Default Header and Footer
-//
-// Author: Nicola Asuni
-//
-// (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com LTD
-//               Manor Coach House, Church Hill
-//               Aldershot, Hants, GU12 4RQ
-//               UK
-//               www.tecnick.com
-//               info@tecnick.com
-//============================================================+
-
-/**
- * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
- * @abstract TCPDF - Example: Default Header and Footer
- * @author Nicola Asuni
- * @since 2008-03-04
- */
-
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+$pdf = new noriPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -69,7 +62,7 @@ $pdf->SetSubject('Artículo');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 
-$pdf->setPrintHeader(false);
+$pdf->setPrintHeader(true);
 $pdf->setPrintFooter(true);
 
 // set header and footer fonts
@@ -140,14 +133,14 @@ $htmlchain = NULL;
 foreach($postobj as $post):
 	$pdf->AddPage();
 	$curpage = $pdf->getPage();
+	$pdf->setHeadText(get_the_title($post->ID));
 	//Imagen destacada
 	if(has_post_thumbnail($post->ID)){
 		$img = get_post_thumbnail_id($post->ID);
 		$imgsrc = wp_get_attachment_image_src($img, 'full');
 
-		$pdf->Image($imgsrc[0], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
-
-		$pdf->Ln();
+		$pdf->Image($imgsrc[0], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);	
+		$pdf->Ln();	
 	}
 
 	//Titulo
@@ -164,9 +157,6 @@ foreach($postobj as $post):
 	$pdf->setFontSize(12);
 	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $content , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);		
 endforeach;
-
-
-
 
 // ---------------------------------------------------------
 

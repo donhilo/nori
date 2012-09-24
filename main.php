@@ -52,6 +52,14 @@ if(!is_dir(NORI_FILESPATH)){
 	mkdir(WP_CONTENT_DIR . '/norifiles', 0755);
 }
 
+//Load TCPDF
+
+//Configuration for TCPDF
+require_once( NORI_PATH . 'tcpdf_nori.php');
+
+//Tcpdf main file
+require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
+	
 
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
