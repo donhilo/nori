@@ -44,7 +44,7 @@ define('NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
 define('NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
 
 //TCPDF Config
-//define('K_TCPDF_EXTERNAL_CONFIG', NORI_PATH . 'tcpdf-config.php');
+define('K_TCPDF_EXTERNAL_CONFIG', NORI_PATH . 'tcpdf-config.php');
 
 //Initialization of storage for pdf files and stuff
 

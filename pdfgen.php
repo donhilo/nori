@@ -20,6 +20,10 @@ $title = $postobj[0]->post_title;
 $fileid = rand(10000,99999);
 
 //Load TCPDF
+
+//Configuration for TCPDF
+require_once( NORI_PATH . 'tcpdf_nori.php');
+
 //Configuration for language, you can change the file corresponding to the main language you want to use
 require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
 
@@ -65,8 +69,8 @@ $pdf->SetSubject('Artículo');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 
-$pdf->setPrintHeader(true);
-$pdf->setPrintFooter(false);
+$pdf->setPrintHeader(false);
+$pdf->setPrintFooter(true);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -123,11 +127,9 @@ $pdf->Ln();
 
 $pdf->setFontSize(16);
 foreach($postobj as $post):
-	$pdf->MultiCell(0,0, ' - <em>' . $post->post_title . '</em>', 0,'L');
+	$pdf->MultiCell(0,0, ' -' . $post->post_title , 0,'L');
 	$pdf->Ln();
 endforeach;
-
-$pdf->AddPage();
 
 $htmlchain = NULL;
 
@@ -136,19 +138,31 @@ $htmlchain = NULL;
 //Construct something to build each article
 
 foreach($postobj as $post):
+	$pdf->AddPage();
 	$curpage = $pdf->getPage();
+	//Imagen destacada
+	if(has_post_thumbnail($post->ID)){
+		$img = get_post_thumbnail_id($post->ID);
+		$imgsrc = wp_get_attachment_image_src($img, 'full');
+
+		$pdf->Image($imgsrc[0], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
+
+		$pdf->Ln();
+	}
+
 	//Titulo
 	$pdf->setFontSize(16);	
 	$pdf->setHeaderData('','',$post->post_title, $post->post_title . $curpage );
 
-	$content = apply_filters('the_content', $post->post_content);
+	$precont = apply_filters('the_content', $post->post_content);
+	//Clean HTML
+	$content = strip_tags($precont, '<p><a><em><strong><ul><li><blockquote><cite>');
 
 	$pdf->MultiCell(0,0,$post->post_title, 0, 'C');
 	$pdf->Ln();
 	// Print text using writeHTMLCell()
 	$pdf->setFontSize(12);
-	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $content , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-	$pdf->AddPage();	
+	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $content , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);		
 endforeach;
 
 
