@@ -24,18 +24,33 @@ License: GPL2
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+/*
+main.php
+Main resources for PDF selection
+
+TODO:
+1. Refine session storage method and make it more bulletproof
+2. Make an article storage system vía URL parameters so's you can get an URL vía email with your stored selection
+3. Make the widget available as a standalone function
+
+
+
+*/
+
 //Constants
 define( 'NORI_PATH', plugin_dir_path(__FILE__) );
 define('NORI_LIBS', NORI_PATH . '/lib/');
 define('NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
+define('NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
+
+//TCPDF Config
+//define('K_TCPDF_EXTERNAL_CONFIG', NORI_PATH . 'tcpdf-config.php');
 
 //Initialization of storage for pdf files and stuff
 
 if(!is_dir(NORI_FILESPATH)){
 	mkdir(WP_CONTENT_DIR . '/norifiles', 0755);
 }
-
-
 
 
 //PDF generation Script

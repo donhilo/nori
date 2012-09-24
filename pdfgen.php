@@ -1,11 +1,22 @@
 <?php
 /*
 PDF Generation scripts
+
+TODO:
+
+1. Replace HTML generation for PDF native generation preparsing de HTML
+2. Make a method for joining different articles as chapters
+3. Define a layout implementation method
+4. Separate images from the rest of the content
+5. Insert images (with captions in a separate section according to design)
+6. Add option for inserting custom fields in the content (via external function)
+
 */
 
 function nori_makePdf($postobj) {
 
 $title = $postobj[0]->post_title;
+//Random file name
 $fileid = rand(10000,99999);
 
 //Load TCPDF
@@ -54,7 +65,7 @@ $pdf->SetSubject('Artículo');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 
-$pdf->setPrintHeader(false);
+$pdf->setPrintHeader(true);
 $pdf->setPrintFooter(false);
 
 // set header and footer fonts
@@ -88,37 +99,60 @@ $pdf->setFontSubsetting(true);
 // print standard ASCII chars, you can use core fonts like
 // helvetica or times to reduce file size.
 $pdf->SetFont('dejavusans', '', 12, '', true);
+
 // Add a page
 // This method has several options, check the source code documentation for more information.
 $pdf->AddPage();
 
 // Set some content to print
 
-$htmlchain = '<h1>PDF generado con TCPDF</h1>';
+//Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M')
 
-$htmlchain .= '<h2>Índice de artículos seleccionados</h2>';
 
-$htmlchain .= '<ul>';
+//Proto Index
+
+$pdf->setFontSize(24);
+$pdf->MultiCell(0,0,'Generador de contenidos en PDF', 0, 'C');
+
+$pdf->Ln();
+
+$pdf->setFontSize(18);
+$pdf->Cell(0,0,'Índice de artículos seleccionados', 0, 1, 'C', 0, '', 0);
+
+$pdf->Ln();
+
+$pdf->setFontSize(16);
 foreach($postobj as $post):
-	$htmlchain .= '<li>'.$post->post_title.'</li>';
+	$pdf->MultiCell(0,0, ' - <em>' . $post->post_title . '</em>', 0,'L');
+	$pdf->Ln();
 endforeach;
-$htmlchain .= '</ul>';
 
-$htmlchain .= '<hr/>';
+$pdf->AddPage();
 
+$htmlchain = NULL;
+
+//Strip post object of images
+
+//Construct something to build each article
 
 foreach($postobj as $post):
-	$htmlchain .=  '<h2>'.$post->post_title.'</h2>';
-	$htmlchain .= '<p>'.apply_filters('the_content', $post->post_content).'</p>';
+	$curpage = $pdf->getPage();
+	//Titulo
+	$pdf->setFontSize(16);	
+	$pdf->setHeaderData('','',$post->post_title, $post->post_title . $curpage );
+
+	$content = apply_filters('the_content', $post->post_content);
+
+	$pdf->MultiCell(0,0,$post->post_title, 0, 'C');
+	$pdf->Ln();
+	// Print text using writeHTMLCell()
+	$pdf->setFontSize(12);
+	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $content , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+	$pdf->AddPage();	
 endforeach;
 
 
-$html = <<<EOD
-	$htmlchain
-EOD;
 
-// Print text using writeHTMLCell()
-$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
 // ---------------------------------------------------------
 
@@ -126,6 +160,8 @@ $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, 
 // This method has several options, check the source code documentation for more information.
 $pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
 
+echo 'The file is ready for download!';
+echo '<a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf">Download </a>';
 //============================================================+
 // END OF FILE
 //============================================================+
