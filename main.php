@@ -39,7 +39,7 @@ TODO:
 
 //Constants
 define( 'NORI_PATH', plugin_dir_path(__FILE__) );
-define('NORI_LIBS', NORI_PATH . '/lib/');
+define('NORI_LIBS', NORI_PATH );
 define('NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
 define('NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
 
