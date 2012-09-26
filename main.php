@@ -125,12 +125,23 @@ function nori_addPost($postid) {
 
 //Nori central functions for selecting articles, adding pdfs, etc.
 function nori_centralOps() {
+	// Script start
+	$rustart = getrusage();
+
 	if(isset($_POST['delete'])):
 			nori_EndSession();	
 	//Display the stored data
 	elseif(isset($_POST['generar']) && isset($_SESSION['articlesel'])):
 		//Set the articles
-		nori_joinArticles($_SESSION['articlesel']);
+		nori_makePdf($_SESSION['articlesel']);
+
+			//TIME CALCULATIONS
+			$ru = getrusage();
+			echo "<br/>";
+			echo "This process used " . rutime($ru, $rustart, "utime") .
+		    " ms for its computations\n";
+			echo "It spent " . rutime($ru, $rustart, "stime") .
+		    " ms in system calls\n";
 
 	//Add articles to session
 	elseif(isset($_POST['submit']) || isset($_SESSION['articlesel']) || !isset($_POST['delete'])):
@@ -151,6 +162,8 @@ function nori_centralOps() {
 			endforeach;
 			echo '</ul>';
 		endif;		
+
+
 }
 
 
@@ -243,14 +256,8 @@ class Nori_Widget extends WP_Widget {
 	}
 }
 
-//The article joiner
-
-function nori_joinArticles($ids) {
-	$postids = explode(',', $ids);
-	//Build post objects to store the data
-	$postobj = array();
-	foreach($postids as $postid):		
-		$postobj[] = get_post(intval($postid));
-	endforeach;	
-		nori_makePdf($postobj);
+//Calcular uso de tiempo
+function rutime($ru, $rus, $index) {
+    return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
+     -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
 }
