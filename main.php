@@ -150,17 +150,19 @@ function nori_centralOps() {
 				nori_addPost($_POST['articleid']);
 			endif;
 				$artids = nori_SessionGet('articlesel');
-				$norids = explode(',', $artids);
-			printf(
-				'Selected articles:'
-				);
-			echo '<ul>';
-			foreach($norids as $norid):
-				printf(
-					'<li>' . get_the_title(intval($norid)) . '</li>'
-					);	
-			endforeach;
+				if($artids):
+					$norids = explode(',', $artids);
+					printf(
+						'Selected articles:'
+						);
+					echo '<ul>';
+					foreach($norids as $norid):
+						printf(
+							'<li>' . get_the_title(intval($norid)) . '</li>'
+						);	
+				endforeach;
 			echo '</ul>';
+			endif;
 		endif;		
 
 
