@@ -148,8 +148,6 @@ class noriPDF extends TCPDF {
 
 function nori_makePdf($postobj) {	
 	$artids = explode(',', $postobj);
-	//Configuration for language, you can change the file corresponding to the main language you want to use
-	require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
 	
 	//Random file name
 	$fileid = rand(10000,99999);

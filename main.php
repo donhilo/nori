@@ -42,8 +42,16 @@ define( 'NORI_PATH', plugin_dir_path(__FILE__) );
 define('NORI_LIBS', NORI_PATH );
 define('NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
 define('NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
+define('TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
+define('TCPDF_PATH', NORI_LIBS . 'tcpdf/');
 
 //TCPDF Config
+
+//Configuration for language, you can change the file corresponding to the main language you want to use
+require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
+
+//Configuration for TCPDF
+require_once( NORI_PATH . 'tcpdf_nori.php');
 define('K_TCPDF_EXTERNAL_CONFIG', NORI_PATH . 'tcpdf_nori.php');
 
 //Initialization of storage for pdf files and stuff
@@ -54,12 +62,8 @@ if(!is_dir(NORI_FILESPATH)){
 
 //Load TCPDF
 
-//Configuration for TCPDF
-require_once( NORI_PATH . 'tcpdf_nori.php');
-
 //Tcpdf main file
 require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
-	
 
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
@@ -208,14 +212,7 @@ class Nori_Widget extends WP_Widget {
 
 		//Display the form for adding article
 		if(is_single()||is_page()){
-			printf(
-				'<form id="selart" action="" method="POST">
-					<input type="hidden" name="articleid" data-extra="'.$post->post_title.'" value="'.$post->ID.'"/>
-					<input type="submit" value="Añadir artículo" id="submit" name="submit"/>
-					<input type="submit" value="Vaciar selección" id="delete" name="delete"/>
-					<input type="submit" value="Generar PDF" id="pdfgen" name="generar"/>
-				</form>'
-				);
+			nori_selectForm();
 			}
 		//Display the link to php generator		
 		
@@ -256,6 +253,20 @@ class Nori_Widget extends WP_Widget {
 
 	<?php
 	}
+}
+
+function nori_selectForm() {
+	global $post;	
+	//Adds Form to article selection
+		printf(
+				'<form id="selart" action="" method="POST">
+					<input type="hidden" name="articleid" data-extra="'.$post->post_title.'" value="'.$post->ID.'"/>
+					<input type="submit" value="Añadir artículo" id="submit" name="submit"/>
+					<input type="submit" value="Vaciar selección" id="delete" name="delete"/>
+					<input type="submit" value="Generar PDF" id="pdfgen" name="generar"/>
+				</form>'
+				);
+		
 }
 
 //Calcular uso de tiempo
