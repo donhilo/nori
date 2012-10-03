@@ -32,18 +32,20 @@ TODO:
 1. Refine session storage method and make it more bulletproof
 2. Make an article storage system vía URL parameters so's you can get an URL vía email with your stored selection
 3. Make the widget available as a standalone function
-
+4. Add the articles via AJAXXX
 
 
 */
 
 //Constants
 define( 'NORI_PATH', plugin_dir_path(__FILE__) );
-define('NORI_LIBS', NORI_PATH );
-define('NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
-define('NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
-define('TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
-define('TCPDF_PATH', NORI_LIBS . 'tcpdf/');
+define( 'NORI_LIBS', NORI_PATH );
+define( 'NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
+define( 'NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
+define( 'TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
+define( 'TCPDF_PATH', NORI_LIBS . 'tcpdf/');
+define( 'NORI_FONTS', NORI_PATH . 'fonts/');
+define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
 
 //TCPDF Config
 
@@ -59,11 +61,6 @@ define('K_TCPDF_EXTERNAL_CONFIG', NORI_PATH . 'tcpdf_nori.php');
 if(!is_dir(NORI_FILESPATH)){
 	mkdir(WP_CONTENT_DIR . '/norifiles', 0755);
 }
-
-//Load TCPDF
-
-//Tcpdf main file
-require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
 
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
@@ -273,4 +270,9 @@ function nori_selectForm() {
 function rutime($ru, $rus, $index) {
     return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
      -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
+}
+
+//Trabajar por directorios
+function getFullPath($url){
+return realpath(str_replace(get_bloginfo('url'), '.', $url));
 }

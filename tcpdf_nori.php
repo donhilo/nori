@@ -9,17 +9,17 @@
 	 * path for PDF fonts
 	 * use K_PATH_MAIN.'fonts/old/' for old non-UTF8 fonts
 	 */
-	define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
+	define ('K_PATH_FONTS', NORI_FILESPATH .'tcpdf-fonts/');
 
 	/**
 	 * cache directory for temporary files (full path)
 	 */
-	define ('K_PATH_CACHE', K_PATH_MAIN.'cache/');
+	define ('K_PATH_CACHE', NORI_FILESPATH .'cache/');
 
 	/**
 	 * cache directory for temporary files (url path)
 	 */
-	define ('K_PATH_URL_CACHE', K_PATH_URL.'cache/');
+	define ('K_PATH_URL_CACHE', NORI_FILESURL .'cache/');
 
 	/**
 	 *images directory

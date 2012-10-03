@@ -12,6 +12,12 @@ TODO:
 
 */
 
+//Load TCPDF
+
+	//Tcpdf main file
+	require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
+
+
 // Makes an standard object article with stuff for publishing. 
 // It can be populated with other stuff from other cms or database.
 class noriContent {
@@ -22,6 +28,8 @@ class noriContent {
 	var $contentimages;
 	var $text;
 	var $meta;		
+
+
 
 //Wordpress Content Layer
 	public function WPLayer($id) {
@@ -35,8 +43,8 @@ class noriContent {
 				$this->mainimage = array();
 				$thumbid = get_post_thumbnail_id($id);
 				$src = wp_get_attachment_image_src($thumbid, 'full');
-				$this->mainimage['src'] = $src[0];
-				$this->mainimage['title'] = unhtmlentities(get_the_title($thumbid));
+				$this->mainimage['src'] = getFullPath($src[0]);
+				$this->mainimage['title'] = html_entity_decode(get_the_title($thumbid), ENT_QUOTES, 'UTF-8');
 			}
 
 		$args = array( 
@@ -52,8 +60,8 @@ class noriContent {
 				$src = wp_get_attachment_url($image->ID);							
 				$this->contentimages[$key] = array(
 					'id' => $image->ID,
-					'src' => $src,
-					'title' => unhtmlentities(get_the_title($image->ID))
+					'src' => getFullPath($src),
+					'title' => html_entity_decode(get_the_title($image->ID), ENT_QUOTES, 'UTF-8')
 					);			
 			}			
 		endif;
@@ -71,7 +79,7 @@ class noriContent {
 
 //Extiendo la clase para hacer pdfs.
 class noriPDF extends TCPDF {
-	var $artitle;
+	var $artitle;	
 
 	public function setHeadText($text) {
 		$this->artitle = $this->unhtmlentities($text);		
@@ -112,15 +120,22 @@ class noriPDF extends TCPDF {
 			$this->Ln();							
 		}
 		
+		//Adding Fonts
+		$pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
+		$opensanslight = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-Light.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
+
 	
-		//Titulo				
-		$this->setFontSize(16);
-		
-		
-		
+		//Titulo
+		// Set font
+		$this->SetFont($pt_sans, '', 12, NORI_GENFONTS . $pt_sans , false);		
+		$this->setFontSize(22);
+						
 		$this->MultiCell(0,0,$content->title, 0, 'C');
 		$this->Ln();		
 		
+		//Contenido
+		// Set font
+		$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
 		$this->setFontSize(12);	
 		$this->writeHTMLCell($w=0, $h=0, $x='', $y='', $content->text , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);	
 		$this->endPage();
@@ -136,7 +151,7 @@ class noriPDF extends TCPDF {
 				$this->Image($image['src'], 10, $y, 80, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
 				$curY = $this->getImageRBY();
 				$this->setY($curY+1);
-				$curY = ($curY+2);					
+				$curY = ($curY+2);									
 				$this->MultiCell(0,0,$image['title'], 0, 'C');				
 				$y += $curY+4;
 			}			
@@ -146,7 +161,9 @@ class noriPDF extends TCPDF {
 
 
 
-function nori_makePdf($postobj) {	
+function nori_makePdf($postobj) {
+
+
 	$artids = explode(',', $postobj);
 	
 	//Random file name
@@ -156,12 +173,18 @@ function nori_makePdf($postobj) {
 
 	$pdf = new noriPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
+	
+
+	$pdf->setFontSubsetting(false);
+
+	
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('A Pie');
 	$pdf->SetTitle('Ejemplo de Generador de PDF');
 	$pdf->SetSubject('Artículo');
 	$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
 
 
 	$pdf->setPrintHeader(true);
@@ -189,14 +212,6 @@ function nori_makePdf($postobj) {
 	$pdf->setLanguageArray($l);
 
 	// ---------------------------------------------------------
-
-	// set default font subsetting mode
-	$pdf->setFontSubsetting(true);
-
-	// Set font
-	$pdf->SetFont('dejavusans', '', 12, '', true);
-
-
 
 	$htmlchain = NULL;
 

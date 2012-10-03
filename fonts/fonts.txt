@@ -1,0 +1,4 @@
+Google Fonts Collection
+-----------------------
+
+http://www.google.com/webfonts#UsePlace:use/Collection:PT+Sans+Narrow:400,700|Open+Sans:400italic,600italic,400,600,700
