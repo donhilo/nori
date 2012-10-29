@@ -22,16 +22,25 @@ class noriContent {
 	var $mainimage;
 	var $contentimages;
 	var $text;
-	var $meta;		
-
-
+	var $excerpt;
+	var $meta;
+	var $date;		
 
 //Wordpress Content Layer
 	public function WPLayer($id) {
 		$article = get_post($id);		
 		$this->title = $article->post_title;
+	
 		//If you need other type of autor you can also set it up.
-		$this->author = $article->post_author;
+	
+		if(get_post_meta($id, 'aycmb_autor', true)):
+			$authors = get_post_meta($id, 'aycmb_autor', false);
+			foreach($authors as $author):
+				$authnames[] = get_the_title($author);
+			endforeach;
+		endif;
+
+		$this->author = $authnames;
 
 		//First image is featured image, the others are the others images attached to the post.	
 
@@ -62,11 +71,13 @@ class noriContent {
 			}			
 		endif;
 
+		//Excerpt
+		$this->excerpt = $article->post_excerpt;
+
 		// Print text using writeHTMLCell()
 		$pretext = apply_filters('the_content', $article->post_content);
 
-		//Clean HTML
-		
+		//Clean HTML	
 
 		$domdoc = new DOMDocument();
 
@@ -145,11 +156,22 @@ class noriPDF extends TCPDF {
     	$content = new noriContent;
     	$content->WPLayer($postid);
 
+
+		// set display mode
+		$this->SetDisplayMode($zoom='fullpage', $layout='TwoColumnRight', $mode='UseNone');
+
+		// set pdf viewer preferences
+		$this->setViewerPreferences(array('Duplex' => 'DuplexFlipLongEdge'));
+
+    	$this->setBooklet(true);
     	$this->setHeadText($content->title);
 
-    	$pagesize = array(310,460);
+    	$page_height = 310;
+    	$page_width = 230;
 
-    	$this->setPageFormat($pagesize, 'L');
+    	$pagesize = array($page_height,$page_width);
+
+    	$this->setPageFormat($pagesize, 'P');
 
 		$this->AddPage();	
 		
@@ -172,22 +194,57 @@ class noriPDF extends TCPDF {
 		//Titulo
 		// Set font
 		$this->SetFont($pt_sans, '', 12, NORI_GENFONTS . $pt_sans , false);		
-		$this->setFontSize(22);
-						
-		$this->MultiCell(0,0,$content->title, 0, 'C');
-			
+		$this->setFontSize(46);
 		
+		$parsed_title = strtoupper_es($content->title);
+		
+		$this->setCellHeightRatio(0.9);				
+
+		$this->MultiCell(210,20,$parsed_title, 0, 'C', false, 1, 16, 16, true, 1, false, true, 0, 'T', true);
+		
+
+		$this->Ln(4);
+
+		//Excerpt
+
+		$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight, false);
+		$this->setFontSize(16);
+
+		$this->setCellHeightRatio(1);
+		$this->MultiCell(210, 0, $content->excerpt, 0, 'L', false);
+
+		$this->Ln(4);
+
+		$this->setFontSize(12);
+
+		if($content->author):
+
+			$this->Cell(0, 0, 'por ');
+			$this->Ln(8);
+
+			//Author
+			foreach($content->author as $author):			
+				$this->Cell(0, 0, $author);
+			endforeach;
+
+		$this->Ln(8);
+
+		endif;
+
 		//Contenido
 		// Set font
-		$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
+		//$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
 		$this->setFontSize(9);	
 		
 
 		//Split this in more calls maybe?
 
-		$this->setEqualColumns(6, 70, $y='');
+		$this->setEqualColumns(3, 60);
+		$this->setCellHeightRatio(1.25);
 
-		$this->writeHTMLCell($w=0, $h=0, $x='', $y='', $content->text , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);	
+		$this->selectColumn();
+		$this->writeHTML($content->text , true, false, true, false, 'L');	
+		$this->Ln();
 		
 
 		//Parse paragraphs ?
@@ -203,13 +260,14 @@ class noriPDF extends TCPDF {
 
 		$this->endPage();
 
+		$this->resetColumns();
+
 		$contentimages = $content->contentimages;
 
 		// if($contentimages):
 		// 	$this->process_chapter_images($contentimages);			
 		// endif;
     }
-
 
 }
 
@@ -295,3 +353,16 @@ function nori_makePdf($postobj) {
 	// END OF FILE
 	//============================================================+
 }
+
+//Util Functions 
+//Uppercase for spanish chars!
+function strtoupper_es($a) { 
+    return strtr(mb_strtoupper($a, "utf-8"), array( 
+      " á" => " A", 
+      " é" => " E", 
+      " í" => " I", 
+      " ó" => " O", 
+      " ú" => " U",
+      " ñ" => " Ñ" 
+    )); 
+} 

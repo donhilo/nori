@@ -69,9 +69,6 @@ require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
 
-//Simple html dom
-require_once( NORI_LIBS . 'simplehtmldom/simple_html_dom.php');
-
 /*
 Session Management
 We use sessions for storing article selection based on IDs.
