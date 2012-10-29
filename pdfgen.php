@@ -12,14 +12,6 @@ TODO:
 
 */
 
-<<<<<<< HEAD
-=======
-//Load TCPDF
-
-	//Tcpdf main file
-	require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
-
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 
 // Makes an standard object article with stuff for publishing. 
 // It can be populated with other stuff from other cms or database.
@@ -164,7 +156,6 @@ class noriPDF extends TCPDF {
 		//Indice
 		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
 
-<<<<<<< HEAD
 		
 		// $mainimage = $content->mainimage;
 		// if($mainimage){						
@@ -177,19 +168,6 @@ class noriPDF extends TCPDF {
 		$pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
 		$opensanslight = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-Light.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
 		$opensanslightitalic = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-LightItalic.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );		
-=======
-		$mainimage = $content->mainimage;
-		if($mainimage){						
-			//print_r($mainimage);
-			$this->Image($mainimage['src'], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);	
-			$this->Ln();							
-		}
-		
-		//Adding Fonts
-		$pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
-		$opensanslight = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-Light.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
-
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 	
 		//Titulo
 		// Set font
@@ -204,18 +182,11 @@ class noriPDF extends TCPDF {
 		$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
 		$this->setFontSize(9);	
 		
-<<<<<<< HEAD
 
 		//Split this in more calls maybe?
 
 		$this->setEqualColumns(6, 70, $y='');
 
-=======
-		//Contenido
-		// Set font
-		$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
-		$this->setFontSize(12);	
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 		$this->writeHTMLCell($w=0, $h=0, $x='', $y='', $content->text , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);	
 		
 
@@ -240,32 +211,11 @@ class noriPDF extends TCPDF {
     }
 
 
-<<<<<<< HEAD
-=======
-			//Coordenadas
-			$y = 10;
-			foreach($contentimages as $image){				
-				$this->Image($image['src'], 10, $y, 80, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
-				$curY = $this->getImageRBY();
-				$this->setY($curY+1);
-				$curY = ($curY+2);									
-				$this->MultiCell(0,0,$image['title'], 0, 'C');				
-				$y += $curY+4;
-			}			
-		endif;
-    }    
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 }
 
 function nori_makePdf($postobj) {
 
 
-<<<<<<< HEAD
-=======
-function nori_makePdf($postobj) {
-
-
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 	$artids = explode(',', $postobj);
 	
 	//Random file name based on time

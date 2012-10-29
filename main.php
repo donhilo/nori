@@ -31,12 +31,7 @@ Main resources for PDF selection
 TODO:
 1. Refine session storage method and make it more bulletproof
 2. Make an article storage system vía URL parameters so's you can get an URL vía email with your stored selection
-<<<<<<< HEAD
 4. Add and remove the articles via AJAXXX
-=======
-3. Make the widget available as a standalone function
-4. Add the articles via AJAXXX
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 
 
 */
@@ -66,14 +61,11 @@ if(!is_dir(NORI_FILESPATH)){
 	mkdir(WP_CONTENT_DIR . '/norifiles', 0755);
 }
 
-<<<<<<< HEAD
 //Load TCPDF
 
 //Tcpdf main file
 require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
 
-=======
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
 
@@ -247,17 +239,7 @@ class Nori_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 
 
-<<<<<<< HEAD
 		nori_centralOps();		
-=======
-		nori_centralOps();
-
-		//Display the form for adding article
-		if(is_single()||is_page()){
-			nori_selectForm();
-			}
-		//Display the link to php generator		
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 		
 		echo $after_widget;
 	}
@@ -294,7 +276,6 @@ class Nori_Widget extends WP_Widget {
 function nori_selectForm() {
 	global $post;	
 	//Adds Form to article selection
-<<<<<<< HEAD
 		printf('<div class="formwrapper">
 				<br/>
 				<form id="selart" action="" method="POST">
@@ -307,18 +288,6 @@ function nori_selectForm() {
 				</div>'
 				);		
 	}
-=======
-		printf(
-				'<form id="selart" action="" method="POST">
-					<input type="hidden" name="articleid" data-extra="'.$post->post_title.'" value="'.$post->ID.'"/>
-					<input type="submit" value="Añadir artículo" id="submit" name="submit"/>
-					<input type="submit" value="Vaciar selección" id="delete" name="delete"/>
-					<input type="submit" value="Generar PDF" id="pdfgen" name="generar"/>
-				</form>'
-				);
-		
-}
->>>>>>> cb086d7db2f44c419f6a7b1c970e52109fd85546
 
 //Calcular uso de tiempo
 function rutime($ru, $rus, $index) {
