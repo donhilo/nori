@@ -31,19 +31,28 @@ Main resources for PDF selection
 TODO:
 1. Refine session storage method and make it more bulletproof
 2. Make an article storage system vía URL parameters so's you can get an URL vía email with your stored selection
-3. Make the widget available as a standalone function
-
+4. Add and remove the articles via AJAXXX
 
 
 */
 
 //Constants
 define( 'NORI_PATH', plugin_dir_path(__FILE__) );
-define('NORI_LIBS', NORI_PATH );
-define('NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
-define('NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
+define( 'NORI_LIBS', NORI_PATH );
+define( 'NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
+define( 'NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
+define( 'TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
+define( 'TCPDF_PATH', NORI_LIBS . 'tcpdf/');
+define( 'NORI_FONTS', NORI_PATH . 'fonts/');
+define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
 
 //TCPDF Config
+
+//Configuration for language, you can change the file corresponding to the main language you want to use
+require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
+
+//Configuration for TCPDF
+require_once( NORI_PATH . 'tcpdf_nori.php');
 define('K_TCPDF_EXTERNAL_CONFIG', NORI_PATH . 'tcpdf_nori.php');
 
 //Initialization of storage for pdf files and stuff
@@ -54,15 +63,14 @@ if(!is_dir(NORI_FILESPATH)){
 
 //Load TCPDF
 
-//Configuration for TCPDF
-require_once( NORI_PATH . 'tcpdf_nori.php');
-
 //Tcpdf main file
 require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );	
-	
 
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
+
+//Simple html dom
+require_once( NORI_LIBS . 'simplehtmldom/simple_html_dom.php');
 
 /*
 Session Management
@@ -125,6 +133,26 @@ function nori_addPost($postid) {
 
 //Nori central functions for selecting articles, adding pdfs, etc.
 function nori_centralOps() {
+	echo '<style>
+		h3.nori_headtitle {
+			font-size:18px
+			}
+		ul.nori_articlelist li {
+			margin-bottom:6px;
+			padding:4px;
+			background-color:#f0f0f0;
+							}
+		div.nori_wrapper {
+			padding:6px;
+			border:1px dotted #ccc;
+			margin-bottom:12px;
+		}
+		.nori_wrapper input {
+			margin-bottom:3px;
+		}
+
+						</style>	';
+	echo '<div class="nori_wrapper">';
 	// Script start
 	$rustart = getrusage();
 
@@ -133,15 +161,19 @@ function nori_centralOps() {
 	//Display the stored data
 	elseif(isset($_POST['generar']) && isset($_SESSION['articlesel'])):
 		//Set the articles
-		nori_makePdf($_SESSION['articlesel']);
+
+		$article_selection = $_SESSION['articlesel'];
+
+		nori_makePdf($article_selection);
 
 			//TIME CALCULATIONS
 			$ru = getrusage();
-			echo "<br/>";
-			echo "This process used " . rutime($ru, $rustart, "utime") .
-		    " ms for its computations\n";
-			echo "It spent " . rutime($ru, $rustart, "stime") .
-		    " ms in system calls\n";
+			echo '<p class="nori_usage">';
+			echo "Este proceso utilizó " . rutime($ru, $rustart, "utime") .
+		    " ms para sus cálculos\n";
+			echo "Gastó " . rutime($ru, $rustart, "stime") .
+		    " en llamadas de sistema\n";
+		    echo '</p>';
 
 	//Add articles to session
 	elseif(isset($_POST['submit']) || isset($_SESSION['articlesel']) || !isset($_POST['delete'])):
@@ -153,19 +185,22 @@ function nori_centralOps() {
 				if($artids):
 					$norids = explode(',', $artids);
 					printf(
-						'Selected articles:'
+						'<h3 class="nori_headtitle">Artículos seleccionados:</h3>'
 						);
-					echo '<ul>';
+					echo '<ul class="nori_articlelist">';
 					foreach($norids as $norid):
 						printf(
-							'<li>' . get_the_title(intval($norid)) . '</li>'
+							'<li> &bull; ' . get_the_title(intval($norid)) . ' <button class="remove" value="X" title="Quitar artículo">x</button></li>'
 						);	
 				endforeach;
 			echo '</ul>';
 			endif;
 		endif;		
 
+	//Show Form for adding articles
 
+	nori_selectForm();
+	echo '</div><!--Nori Wrapper-->';
 }
 
 
@@ -182,11 +217,11 @@ function nori_widget() {
 class Nori_Widget extends WP_Widget {
 
 	function Nori_Widget() {
-		$widget_ops = array( 'classname' => 'example', 'description' => __('A widget that displays the authors name ', 'example') );
+		$widget_ops = array( 'classname' => 'nori_widget', 'description' => __('Widget de selección de artículos ', 'nori') );
 		
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'example-widget' );
+		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'nori-widget' );
 		
-		$this->WP_Widget( 'example-widget', __('Example Widget', 'example'), $widget_ops, $control_ops );
+		$this->WP_Widget( 'nori-widget', __('Selector de artículos', 'nori'), $widget_ops, $control_ops );
 	}
 	
 	function widget( $args, $instance ) {
@@ -204,20 +239,7 @@ class Nori_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 
 
-		nori_centralOps();
-
-		//Display the form for adding article
-		if(is_single()||is_page()){
-			printf(
-				'<form id="selart" action="" method="POST">
-					<input type="hidden" name="articleid" data-extra="'.$post->post_title.'" value="'.$post->ID.'"/>
-					<input type="submit" value="Añadir artículo" id="submit" name="submit"/>
-					<input type="submit" value="Vaciar selección" id="delete" name="delete"/>
-					<input type="submit" value="Generar PDF" id="pdfgen" name="generar"/>
-				</form>'
-				);
-			}
-		//Display the link to php generator		
+		nori_centralOps();		
 		
 		echo $after_widget;
 	}
@@ -238,28 +260,42 @@ class Nori_Widget extends WP_Widget {
 	function form( $instance ) {
 
 		//Set up some default widget settings.
-		$defaults = array( 'title' => __('Example', 'example'), 'name' => __('Bilal Shaheen', 'example'), 'show_info' => true );
+		$defaults = array( 'title' => __('Selector de articulos', 'nori_widget'));
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
 		//Widget Title: Text Input.
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:', 'example'); ?></label>
 			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:100%;" />
-		</p>
-
-		//Text Input.
-		<p>
-			<label for="<?php echo $this->get_field_id( 'name' ); ?>"><?php _e('Your Name:', 'example'); ?></labl>
-			<input id="<?php echo $this->get_field_id( 'name' ); ?>" name="<?php echo $this->get_field_name( 'name' ); ?>" value="<?php echo $instance['name']; ?>" style="width:100%;" />
 		</p>		
-		
 
 	<?php
 	}
 }
 
+function nori_selectForm() {
+	global $post;	
+	//Adds Form to article selection
+		printf('<div class="formwrapper">
+				<br/>
+				<form id="selart" action="" method="POST">
+					<input type="hidden" name="articleid" data-extra="'.$post->post_title.'" value="'.$post->ID.'"/>
+					<input type="submit" value="Añadir artículo" id="submit" name="submit"/>					
+					<input type="submit" value="Generar PDF" id="pdfgen" name="generar"/>
+					<input type="submit" value="Vaciar selección" id="delete" name="delete"/>
+				</form>
+				<br/>
+				</div>'
+				);		
+	}
+
 //Calcular uso de tiempo
 function rutime($ru, $rus, $index) {
     return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
      -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
+}
+
+//Trabajar por directorios
+function getFullPath($url){
+return realpath(str_replace(get_bloginfo('url'), '.', $url));
 }

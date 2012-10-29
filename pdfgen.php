@@ -4,13 +4,14 @@ PDF Generation scripts
 
 TODO:
 
-1. Replace HTML generation for PDF native generation preparsing de HTML
+1. Parse HTML to chunkify it
 2. Define a layout implementation method
 3. Add option for inserting custom fields in the content (via external function)
 4. Make a better OOP structure for the whole stuff
 5. Make progress indicator for generation of pdf
 
 */
+
 
 // Makes an standard object article with stuff for publishing. 
 // It can be populated with other stuff from other cms or database.
@@ -23,10 +24,13 @@ class noriContent {
 	var $text;
 	var $meta;		
 
+
+
 //Wordpress Content Layer
 	public function WPLayer($id) {
 		$article = get_post($id);		
 		$this->title = $article->post_title;
+		//If you need other type of autor you can also set it up.
 		$this->author = $article->post_author;
 
 		//First image is featured image, the others are the others images attached to the post.	
@@ -35,8 +39,8 @@ class noriContent {
 				$this->mainimage = array();
 				$thumbid = get_post_thumbnail_id($id);
 				$src = wp_get_attachment_image_src($thumbid, 'full');
-				$this->mainimage['src'] = $src[0];
-				$this->mainimage['title'] = unhtmlentities(get_the_title($thumbid));
+				$this->mainimage['src'] = getFullPath($src[0]);
+				$this->mainimage['title'] = html_entity_decode(get_the_title($thumbid), ENT_QUOTES, 'UTF-8');
 			}
 
 		$args = array( 
@@ -52,8 +56,8 @@ class noriContent {
 				$src = wp_get_attachment_url($image->ID);							
 				$this->contentimages[$key] = array(
 					'id' => $image->ID,
-					'src' => $src,
-					'title' => unhtmlentities(get_the_title($image->ID))
+					'src' => getFullPath($src),
+					'title' => html_entity_decode(get_the_title($image->ID), ENT_QUOTES, 'UTF-8')
 					);			
 			}			
 		endif;
@@ -62,7 +66,26 @@ class noriContent {
 		$pretext = apply_filters('the_content', $article->post_content);
 
 		//Clean HTML
-		$this->text = strip_tags($pretext, '<p><a><em><strong><ul><li><blockquote><cite>');
+		
+
+		$domdoc = new DOMDocument();
+
+		//Turn stuff into an object for easey parsing
+
+		$domdoc->loadHTML('<?xml encoding="UTF-8">' . $pretext);		
+		
+		//Remove unwanted stuff		
+
+		$xpath = new DOMXPath($domdoc);
+		$divs = $xpath->query('//div');
+
+
+		foreach($divs as $div):
+			$div->parentNode->removeChild($div);
+		endforeach;
+
+		//Last step with filtered HTML
+		$this->text = $domdoc->saveHTML();
 
 		$this->meta = get_post_custom($id);		
 	}
@@ -71,7 +94,7 @@ class noriContent {
 
 //Extiendo la clase para hacer pdfs.
 class noriPDF extends TCPDF {
-	var $artitle;
+	var $artitle;	
 
 	public function setHeadText($text) {
 		$this->artitle = $this->unhtmlentities($text);		
@@ -80,6 +103,9 @@ class noriPDF extends TCPDF {
 	 //Page header
     public function Header() {
         // Set font
+        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
+
         $this->setFontSize(10);
         // Title
         $this->Cell(0, 15, $this->artitle, 0, false, 'L', 0, '', 0, false, 'M', 'M');
@@ -90,80 +116,127 @@ class noriPDF extends TCPDF {
         // Position at 15 mm from bottom
         $this->SetY(-15);
         // Set font
+        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
         $this->setFontSize(10);
         // Page number
         $this->Cell(0, 10, 'Página '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
 
-    public function Chapter($postid) {
-    	$content = new noriContent;
-    	$content->WPLayer($postid);
-
-    	$this->setHeadText($content->title);
-		$this->AddPage();	
-		
-		//Indice
-		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
-
-		$mainimage = $content->mainimage;
-		if($mainimage){						
-			//print_r($mainimage);
-			$this->Image($mainimage['src'], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);	
-			$this->Ln();							
-		}
-		
-	
-		//Titulo				
-		$this->setFontSize(16);
-		
-		
-		
-		$this->MultiCell(0,0,$content->title, 0, 'C');
-		$this->Ln();		
-		
-		$this->setFontSize(12);	
-		$this->writeHTMLCell($w=0, $h=0, $x='', $y='', $content->text , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);	
-		$this->endPage();
-
-		$contentimages = $content->contentimages;
-
-		if($contentimages):
-			$this->AddPage();									
-
+    //Procesa las imágenes del capítulo
+    public function process_chapter_images($contentimages) {
+	$this->AddPage();									
 			//Coordenadas
 			$y = 10;
 			foreach($contentimages as $image){				
 				$this->Image($image['src'], 10, $y, 80, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
 				$curY = $this->getImageRBY();
-				$this->setY($curY+1);
-				$curY = ($curY+2);					
+				$this->setY($curY);
+				$curY = ($curY+0.6);									
 				$this->MultiCell(0,0,$image['title'], 0, 'C');				
-				$y += $curY+4;
-			}			
-		endif;
-    }    
+				//doy el salto a la otra imagen
+				$y = $curY+6;
+			}
+
+	}
+
+	//Procesa el contenido de cada capítulo
+    public function Chapter($postid) {
+    	$content = new noriContent;
+    	$content->WPLayer($postid);
+
+    	$this->setHeadText($content->title);
+
+    	$pagesize = array(310,460);
+
+    	$this->setPageFormat($pagesize, 'L');
+
+		$this->AddPage();	
+		
+		//Indice
+		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
+
+		
+		// $mainimage = $content->mainimage;
+		// if($mainimage){						
+		// 	//print_r($mainimage);
+		// 	$this->Image($mainimage['src'], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);	
+		// 	$this->Ln();							
+		// }
+		
+		//Adding Fonts
+		$pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
+		$opensanslight = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-Light.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+		$opensanslightitalic = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-LightItalic.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );		
+	
+		//Titulo
+		// Set font
+		$this->SetFont($pt_sans, '', 12, NORI_GENFONTS . $pt_sans , false);		
+		$this->setFontSize(22);
+						
+		$this->MultiCell(0,0,$content->title, 0, 'C');
+			
+		
+		//Contenido
+		// Set font
+		$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
+		$this->setFontSize(9);	
+		
+
+		//Split this in more calls maybe?
+
+		$this->setEqualColumns(6, 70, $y='');
+
+		$this->writeHTMLCell($w=0, $h=0, $x='', $y='', $content->text , $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);	
+		
+
+		//Parse paragraphs ?
+/*
+		$parsed = new simple_html_dom();
+		$parsed->load($content->text);		
+		print_r($parsed->find('p'));
+		foreach($parsed->find('p') as $paragraph):
+			$cleantext = $paragraph->plaintext;
+			$this->write($h, $cleantext,'', false, 'J', false, 0, false, false, 0, 0, '');
+		endforeach;			
+*/
+
+		$this->endPage();
+
+		$contentimages = $content->contentimages;
+
+		// if($contentimages):
+		// 	$this->process_chapter_images($contentimages);			
+		// endif;
+    }
+
+
 }
 
+function nori_makePdf($postobj) {
 
 
-function nori_makePdf($postobj) {	
 	$artids = explode(',', $postobj);
-	//Configuration for language, you can change the file corresponding to the main language you want to use
-	require_once( NORI_LIBS . 'tcpdf/config/lang/spa.php');
 	
-	//Random file name
-	$fileid = rand(10000,99999);
+	//Random file name based on time
+	$fileid = uniqid();
 
 	// create new PDF document
 
 	$pdf = new noriPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
+	
+
+	$pdf->setFontSubsetting(false);
+
+	
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('A Pie');
 	$pdf->SetTitle('Ejemplo de Generador de PDF');
 	$pdf->SetSubject('Artículo');
 	$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
 
 
 	$pdf->setPrintHeader(true);
@@ -192,14 +265,6 @@ function nori_makePdf($postobj) {
 
 	// ---------------------------------------------------------
 
-	// set default font subsetting mode
-	$pdf->setFontSubsetting(true);
-
-	// Set font
-	$pdf->SetFont('dejavusans', '', 12, '', true);
-
-
-
 	$htmlchain = NULL;
 
 	//Strip post object of images
@@ -223,8 +288,8 @@ function nori_makePdf($postobj) {
 	// This method has several options, check the source code documentation for more information.
 	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
 
-	echo 'The file is ready for download!';
-	echo '<a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf">Download </a>';
+	echo '<p>El archivo está listo para descargar</p>';
+	echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf">Descargar</a></p>';
 	
 	//============================================================+
 	// END OF FILE

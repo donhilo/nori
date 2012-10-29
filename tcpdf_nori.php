@@ -1,26 +1,25 @@
-<?php 
+<?php
 
-/**
-	 * URL path to tcpdf installation folder (http://localhost/tcpdf/).
-	 * By default it is automatically calculated but you can also set it as a fixed string to improve performances.
-	 */
-	define ('K_PATH_URL', $k_path_url);
+
+	define ('K_PATH_MAIN', TCPDF_PATH );
+
+	define ('K_PATH_URL', TCPDF_URL );
 
 	/**
 	 * path for PDF fonts
 	 * use K_PATH_MAIN.'fonts/old/' for old non-UTF8 fonts
 	 */
-	define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
+	define ('K_PATH_FONTS', NORI_FILESPATH .'tcpdf-fonts/');
 
 	/**
 	 * cache directory for temporary files (full path)
 	 */
-	define ('K_PATH_CACHE', K_PATH_MAIN.'cache/');
+	define ('K_PATH_CACHE', NORI_FILESPATH .'cache/');
 
 	/**
 	 * cache directory for temporary files (url path)
 	 */
-	define ('K_PATH_URL_CACHE', K_PATH_URL.'cache/');
+	define ('K_PATH_URL_CACHE', NORI_FILESURL .'cache/');
 
 	/**
 	 *images directory
@@ -167,3 +166,8 @@
 	 * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
 	 */
 	define('K_TCPDF_CALLS_IN_HTML', true);
+
+
+//============================================================+
+// END OF FILE
+//============================================================+
