@@ -4,11 +4,9 @@ PDF Generation scripts
 
 TODO:
 
-1. Parse HTML to chunkify it
-2. Define a layout implementation method
-3. Add option for inserting custom fields in the content (via external function)
-4. Make a better OOP structure for the whole stuff
-5. Make progress indicator for generation of pdf
+1. Define a layout implementation method
+2. Define layout profiles
+3. Create a system for styling child elements.
 
 */
 
@@ -21,9 +19,8 @@ class noriContent {
 	var $author;
 	var $mainimage;
 	var $contentimages;
-	var $text;
-	var $excerpt;
-	var $meta;
+	var $text;	
+	var $excerpt;	
 	var $date;		
 
 //Wordpress Content Layer
@@ -41,6 +38,8 @@ class noriContent {
 		endif;
 
 		$this->author = $authnames;
+
+		$this->date = mysql2date('M Y', $article->post_date, true);
 
 		//First image is featured image, the others are the others images attached to the post.	
 
@@ -79,26 +78,40 @@ class noriContent {
 
 		//Clean HTML	
 
-		$domdoc = new DOMDocument();
+		$this->domParser($pretext);		
+	}
 
+	public function domParser($text) {
+
+		//Strip tags
+
+		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>');
+
+		$domdoc = new DOMDocument();
+		
 		//Turn stuff into an object for easey parsing
 
-		$domdoc->loadHTML('<?xml encoding="UTF-8">' . $pretext);		
+		$domdoc->loadHTML('<?xml encoding="UTF-8">' . $cleantext);		
 		
 		//Remove unwanted stuff		
 
 		$xpath = new DOMXPath($domdoc);
 		$divs = $xpath->query('//div');
-
-
+		
 		foreach($divs as $div):
 			$div->parentNode->removeChild($div);
 		endforeach;
 
-		//Last step with filtered HTML
-		$this->text = $domdoc->saveHTML();
+		$cleandom = $xpath->query('//p | //h1 | //h2 | //h3 | //h4 | //h5');
 
-		$this->meta = get_post_custom($id);		
+		foreach($cleandom as $key=>$cd):
+			$this->text[$key]['element'] = $cd->nodeName;
+			$this->text[$key]['content'] = $cd->nodeValue;
+		endforeach;
+
+		//Last step with filtered HTML
+		// $this->text = $domdoc->saveHTML();
+
 	}
 }
 
@@ -151,12 +164,8 @@ class noriPDF extends TCPDF {
 
 	}
 
-	//Procesa el contenido de cada capítulo
-    public function Chapter($postid) {
-    	$content = new noriContent;
-    	$content->WPLayer($postid);
-
-
+	//Inicializa las páginas y cosas básicas de formato
+	public function initMagazine() {
 		// set display mode
 		$this->SetDisplayMode($zoom='fullpage', $layout='TwoColumnRight', $mode='UseNone');
 
@@ -172,38 +181,68 @@ class noriPDF extends TCPDF {
     	$pagesize = array($page_height,$page_width);
 
     	$this->setPageFormat($pagesize, 'P');
+	}
 
-		$this->AddPage();	
+	//Crea ek título del artículo
+	public function articleTitle($title, $font, $size) {
+		//Titulo
+		// Set font
+		$this->SetFont($font, '', 12, NORI_GENFONTS . $pt_sans , false);		
+		$this->setFontSize($size);
+		
+		$parsed_title = strtoupper_es($title);
+		
+		$this->setCellHeightRatio(0.9);				
+
+		$this->MultiCell(210,20,$parsed_title, 0, 'L', false, 1, 16, $this->GetY(), true, 1, false, true, 0, 'T', true);
+		
+		$this->Ln(4);
+	}
+
+	public function mainImage($article_layout, $mainimage) {
+		switch($article_layout):
+			case('standard_layout'):			
+				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'L', 1, 300, 'C', false, false, false, true, false, false);														
+				//The image is tall, I need a new page
+				$curY = $this->getImageRBY();
+				if( $curY > 200):
+					$this->addPage();
+				else:					
+					$this->SetY($curY + 8);
+				endif;
+			break;
+			default:
+				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'L', 1, 300, 'C', false, false, false, true, false, false);	
+				$this->addPage();					
+			break;
+		endswitch;
+	}
+
+	//Procesa el contenido de cada capítulo
+    public function Chapter($postid) {
+    	$content = new noriContent;
+    	$content->WPLayer($postid);
+    	
+    	$article_layout = 'standard_layout';
+
+    	$this->initMagazine();		
 		
 		//Indice
+		$this->addPage();
 		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
 
+		$mainimage = $content->mainimage;
 		
-		// $mainimage = $content->mainimage;
-		// if($mainimage){						
-		// 	//print_r($mainimage);
-		// 	$this->Image($mainimage['src'], 15, 14, 100, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);	
-		// 	$this->Ln();							
-		// }
+		if($mainimage){						
+				$this->mainImage($article_layout, $mainimage);						 						
+			}
 		
 		//Adding Fonts
 		$pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
 		$opensanslight = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-Light.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
-		$opensanslightitalic = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-LightItalic.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );		
-	
-		//Titulo
-		// Set font
-		$this->SetFont($pt_sans, '', 12, NORI_GENFONTS . $pt_sans , false);		
-		$this->setFontSize(46);
-		
-		$parsed_title = strtoupper_es($content->title);
-		
-		$this->setCellHeightRatio(0.9);				
+		$opensanslightitalic = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-LightItalic.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );			
 
-		$this->MultiCell(210,20,$parsed_title, 0, 'C', false, 1, 16, 16, true, 1, false, true, 0, 'T', true);
-		
-
-		$this->Ln(4);
+		$this->articleTitle($content->title, $pt_sans, 48);
 
 		//Excerpt
 
@@ -231,6 +270,16 @@ class noriPDF extends TCPDF {
 
 		endif;
 
+		//Date
+
+		$this->Cell(0,0, $content->date);
+		$this->Ln(8);
+
+		//Si hay poco espacio necesito otra página
+		if($this->GetY() > 260):
+			$this->addPage();
+		endif;
+
 		//Contenido
 		// Set font
 		//$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
@@ -242,21 +291,38 @@ class noriPDF extends TCPDF {
 		$this->setEqualColumns(3, 60);
 		$this->setCellHeightRatio(1.25);
 
-		$this->selectColumn();
-		$this->writeHTML($content->text , true, false, true, false, 'L');	
-		$this->Ln();
 		
+		$paragraphs = $content->text;
+		
+		$this->selectColumn();
 
-		//Parse paragraphs ?
-/*
-		$parsed = new simple_html_dom();
-		$parsed->load($content->text);		
-		print_r($parsed->find('p'));
-		foreach($parsed->find('p') as $paragraph):
-			$cleantext = $paragraph->plaintext;
-			$this->write($h, $cleantext,'', false, 'J', false, 0, false, false, 0, 0, '');
-		endforeach;			
-*/
+		//Cambiando dependiendo del tipo de elemento
+
+		foreach($paragraphs as $paragraph):
+			switch($paragraph['element']):
+				case('p'):
+					$this->setFontSize(9);
+					$this->multiCell(0, 0, $paragraph['content'] , 0, 'L', false);
+		 			$this->Ln(4);
+		 		break;
+		 		case('h1'):
+		 		case('h2'):
+		 		case('h3'):
+		 		case('h4'):
+		 		case('h5'):
+		 			$this->setFontSize(12);
+		 			$this->multiCell(0, 0, $paragraph['content'] , 0, 'L', false);
+		 			$this->Ln(4);
+		 		break;
+		 		default:
+		 			$this->multiCell(0, 0, $paragraph['content'] , 0, 'L', false);
+		 			$this->Ln(4);	
+			endswitch;		 	
+		endforeach;
+
+		// $this->selectColumn();
+		// $this->writeHTML($content->text , true, false, true, false, 'L');	
+		// $this->Ln();
 
 		$this->endPage();
 
@@ -264,9 +330,6 @@ class noriPDF extends TCPDF {
 
 		$contentimages = $content->contentimages;
 
-		// if($contentimages):
-		// 	$this->process_chapter_images($contentimages);			
-		// endif;
     }
 
 }
@@ -333,12 +396,13 @@ function nori_makePdf($postobj) {
 		$pdf->Chapter($postid);
 	endforeach;
 
-	$pdf->setHeadText('Indice');
-	$pdf->addTOCPage();
-	$pdf->addTOC(1, 'courier', '.', 'Indice', '', array(128,0,0));
+	// Indice
+	// $pdf->setHeadText('Indice');
+	// $pdf->addTOCPage();
+	// $pdf->addTOC(1, 'courier', '.', 'Indice', '', array(128,0,0));
 
 	// end of TOC page
-	$pdf->endTOCPage();
+	// $pdf->endTOCPage();
 
 	// ---------------------------------------------------------
 
