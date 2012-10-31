@@ -11,8 +11,12 @@ TODO:
 */
 
 
-// Makes an standard object article with stuff for publishing. 
-// It can be populated with other stuff from other cms or database.
+/* 	Makes an standard object article with stuff for publishing. 
+* 	It can be populated with other stuff from other cms or database,
+*	You just have to plug the function to make a content object	
+*
+*/
+
 class noriContent {
 	//Content variables, you can add more as you wish
 	var $title;
@@ -21,23 +25,35 @@ class noriContent {
 	var $contentimages;
 	var $text;	
 	var $excerpt;	
-	var $date;		
+	var $date;
+	var $type;		
 
-//Wordpress Content Layer
+/*	Wordpress Content Layer.
+* 	Here I make a content object for later use in the pdf generation
+*
+*/
+
 	public function WPLayer($id) {
 		$article = get_post($id);		
 		$this->title = $article->post_title;
 	
 		//If you need other type of autor you can also set it up.
+		//Im taking it from some custom post meta
 	
-		if(get_post_meta($id, 'aycmb_autor', true)):
-			$authors = get_post_meta($id, 'aycmb_autor', false);
-			foreach($authors as $author):
-				$authnames[] = get_the_title($author);
+		if(get_post_meta($id, 'aycmb_autor', true)):			
+			$authors = get_post_meta($id, 'aycmb_autor', false);		
+			$nauts = count($authors);
+			
+			foreach($authors as $key=>$author):
+				if($key > 0 && $key + 1 == $nauts ):
+					$autstring .= ' y ';
+				endif;
+					$autstring .= get_the_title($author);				
 			endforeach;
-		endif;
 
-		$this->author = $authnames;
+		endif;
+		
+		$this->author = $autstring;
 
 		$this->date = mysql2date('M Y', $article->post_date, true);
 
@@ -73,6 +89,9 @@ class noriContent {
 		//Excerpt
 		$this->excerpt = $article->post_excerpt;
 
+		//Type
+		$this->type = get_post_type($article->ID);
+
 		// Print text using writeHTMLCell()
 		$pretext = apply_filters('the_content', $article->post_content);
 
@@ -80,6 +99,12 @@ class noriContent {
 
 		$this->domParser($pretext);		
 	}
+
+	/*
+	*	Using PHP Dom, parse all the main content and get a clean HTML array with only the essential stuff, classified by tag name
+	*	this way you can choose separate styling for each html element. I haven't figured out a way to style sub sub elements like
+	*	<strong> and <em> yet.
+	*/
 
 	public function domParser($text) {
 
@@ -115,24 +140,33 @@ class noriContent {
 	}
 }
 
+/*
+* Extending TCPDF Class for custom stuff and making the PDF.
+*/
+
 
 //Extiendo la clase para hacer pdfs.
 class noriPDF extends TCPDF {
-	var $artitle;	
+	var $artitle;
+	var $art_type;	
+	var $maincolor;
+	var $pubtitle;
 
+	//Set head text
 	public function setHeadText($text) {
 		$this->artitle = $this->unhtmlentities($text);		
 	}
 
 	 //Page header
     public function Header() {
-        // Set font
+    	$this->SetY(0);
+
+        // Set font        
         $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
 		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
-
         $this->setFontSize(10);
         // Title
-        $this->Cell(0, 15, $this->artitle, 0, false, 'L', 0, '', 0, false, 'M', 'M');
+        $this->Cell(0, 15, 'article_type', 0, false, 'L', 0, '', 0, false, 'M', 'M');
     }
 
     // Page footer
@@ -144,7 +178,7 @@ class noriPDF extends TCPDF {
 		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
         $this->setFontSize(10);
         // Page number
-        $this->Cell(0, 10, 'Página '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
 
     //Procesa las imágenes del capítulo
@@ -183,6 +217,50 @@ class noriPDF extends TCPDF {
     	$this->setPageFormat($pagesize, 'P');
 	}
 
+
+	// cambia ciertos atributos basado en el tipo de contenido
+	public function articleType($type) {
+		switch($type):
+
+			case('ayc_postcur'):
+				$this->maincolor = '#36937F';
+			break;
+
+			case('ayc_artcrit'):
+				$this->maincolor = '#8F5D86';
+			break;
+
+			case('ayc_cronica'):
+				$this->maincolor = '#DC9A51';
+			break;
+
+			case('ayc_entrevista'):
+				$this->maincolor = '#6778B4';
+			break;
+
+			case('ayc_ensayo'):
+				$this->maincolor = '#55536C';
+			break;
+
+			case('post'):
+				$this->maincolor = '#B2BA8F';
+			break;
+
+		endswitch;
+	}
+
+	public function setBlackColorText() {
+		$this->setColor('text', 0, 0, 0, 100);
+	}
+
+	public function setWhiteColorText() {
+		$this->setColor('text', 0, 0, 0, 0);
+	}
+
+	public function setPageBackground($bgcolor) {
+
+	}
+
 	//Crea ek título del artículo
 	public function articleTitle($title, $font, $size) {
 		//Titulo
@@ -193,6 +271,8 @@ class noriPDF extends TCPDF {
 		$parsed_title = strtoupper_es($title);
 		
 		$this->setCellHeightRatio(0.9);				
+
+		$this->setTextColorArray($this->convertHTMLColorToDec($this->maincolor));
 
 		$this->MultiCell(210,20,$parsed_title, 0, 'L', false, 1, 16, $this->GetY(), true, 1, false, true, 0, 'T', true);
 		
@@ -218,23 +298,13 @@ class noriPDF extends TCPDF {
 		endswitch;
 	}
 
-	//Procesa el contenido de cada capítulo
-    public function Chapter($postid) {
-    	$content = new noriContent;
-    	$content->WPLayer($postid);
-    	
-    	$article_layout = 'standard_layout';
+	//Processes the initial article content: Title, author, mainimage, date.
 
-    	$this->initMagazine();		
-		
-		//Indice
-		$this->addPage();
-		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
-
+	public function articleIntro($content, $layout) {
 		$mainimage = $content->mainimage;
 		
 		if($mainimage){						
-				$this->mainImage($article_layout, $mainimage);						 						
+				$this->mainImage($layout, $mainimage);						 						
 			}
 		
 		//Adding Fonts
@@ -252,19 +322,19 @@ class noriPDF extends TCPDF {
 		$this->setCellHeightRatio(1);
 		$this->MultiCell(210, 0, $content->excerpt, 0, 'L', false);
 
-		$this->Ln(4);
+		$this->Ln(4);		
 
-		$this->setFontSize(12);
-
-		if($content->author):
-
-			$this->Cell(0, 0, 'por ');
-			$this->Ln(8);
+		if($content->author):			
 
 			//Author
-			foreach($content->author as $author):			
-				$this->Cell(0, 0, $author);
-			endforeach;
+			$nchars = $this->getNumChars($content->author);
+			$cellwidth = $nchars * 3 + 6;
+
+			$this->setFontSize(12);
+			$this->SetFillColorArray($this->convertHTMLColorToDec($this->maincolor));
+			$this->setWhiteColorText();			
+			$this->setCellPaddings(1, 1, 1, 1);
+			$this->Cell( $cellwidth, 0, 'por ' . $content->author, 0, 0, 'L', true);		
 
 		$this->Ln(8);
 
@@ -272,6 +342,7 @@ class noriPDF extends TCPDF {
 
 		//Date
 
+		$this->setBlackColorText();
 		$this->Cell(0,0, $content->date);
 		$this->Ln(8);
 
@@ -280,6 +351,27 @@ class noriPDF extends TCPDF {
 			$this->addPage();
 		endif;
 
+	}
+
+	//Procesa el contenido de cada capítulo
+    public function Chapter($postid) {
+
+    	$content = new noriContent;
+    	$content->WPLayer($postid);
+
+    	$layout = 'standard_layout';
+
+    	$this->articleType($content->type);    	
+
+    	$this->initMagazine();		
+		
+		//Indice
+		$this->addPage();
+		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
+
+		//Article Intro
+		$this->articleIntro($content, $layout);
+		
 		//Contenido
 		// Set font
 		//$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
@@ -295,6 +387,8 @@ class noriPDF extends TCPDF {
 		$paragraphs = $content->text;
 		
 		$this->selectColumn();
+
+		$this->setBlackColorText();
 
 		//Cambiando dependiendo del tipo de elemento
 
@@ -354,10 +448,9 @@ function nori_makePdf($postobj) {
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('A Pie');
-	$pdf->SetTitle('Ejemplo de Generador de PDF');
+	$pdf->SetTitle('Arte y Crítica');
 	$pdf->SetSubject('Artículo');
 	$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-
 
 
 	$pdf->setPrintHeader(true);
@@ -411,7 +504,7 @@ function nori_makePdf($postobj) {
 	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
 
 	echo '<p>El archivo está listo para descargar</p>';
-	echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf">Descargar</a></p>';
+	echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf">Descargar</a></p>';	
 	
 	//============================================================+
 	// END OF FILE
