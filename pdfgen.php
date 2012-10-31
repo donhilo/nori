@@ -152,21 +152,16 @@ class noriPDF extends TCPDF {
 	var $maincolor;
 	var $pubtitle;
 
-	//Set head text
-	public function setHeadText($text) {
-		$this->artitle = $this->unhtmlentities($text);		
-	}
-
-	 //Page header
+ //Page header
     public function Header() {
-    	$this->SetY(0);
+    	$this->SetY(4);
 
         // Set font        
         $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
 		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
         $this->setFontSize(10);
         // Title
-        $this->Cell(0, 15, 'article_type', 0, false, 'L', 0, '', 0, false, 'M', 'M');
+        $this->Cell(0, 15, $this->art_type, 0, false, 'L', 0, '', 0, false, 'M', 'M');
     }
 
     // Page footer
@@ -206,8 +201,7 @@ class noriPDF extends TCPDF {
 		// set pdf viewer preferences
 		$this->setViewerPreferences(array('Duplex' => 'DuplexFlipLongEdge'));
 
-    	$this->setBooklet(true);
-    	$this->setHeadText($content->title);
+    	$this->setBooklet(true);    	
 
     	$page_height = 310;
     	$page_width = 230;
@@ -223,7 +217,7 @@ class noriPDF extends TCPDF {
 		switch($type):
 
 			case('ayc_postcur'):
-				$this->maincolor = '#36937F';
+				$this->maincolor = '#36937F';								
 			break;
 
 			case('ayc_artcrit'):
@@ -244,7 +238,7 @@ class noriPDF extends TCPDF {
 
 			case('post'):
 				$this->maincolor = '#B2BA8F';
-			break;
+			break;			
 
 		endswitch;
 	}
@@ -308,11 +302,16 @@ class noriPDF extends TCPDF {
 			}
 		
 		//Adding Fonts
+		
+		//Not a TTF font, had to convert using: http://www.freefontconverter.com/ and then http://www.xml-convert.com/ttftopdf and then do a manual upload to the font definition folder
+		$bebasneue = $this->addFont( 'bebasn');	
+
+		//Normal TTF fonts, not so traumatic
 		$pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );	
 		$opensanslight = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-Light.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
 		$opensanslightitalic = $this->addTTFfont( NORI_FONTS . 'Open_Sans/OpenSans-LightItalic.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );			
 
-		$this->articleTitle($content->title, $pt_sans, 48);
+		$this->articleTitle($content->title, 'bebasn', 48);
 
 		//Excerpt
 
@@ -361,6 +360,7 @@ class noriPDF extends TCPDF {
 
     	$layout = 'standard_layout';
 
+    	$this->art_type = $content->type;
     	$this->articleType($content->type);    	
 
     	$this->initMagazine();		
@@ -478,8 +478,6 @@ function nori_makePdf($postobj) {
 	$pdf->setLanguageArray($l);
 
 	// ---------------------------------------------------------
-
-	$htmlchain = NULL;
 
 	//Strip post object of images
 
