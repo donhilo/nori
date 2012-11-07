@@ -89,12 +89,12 @@
 	/**
 	 * top margin
 	 */
-	define ('PDF_MARGIN_TOP', 27);
+	define ('PDF_MARGIN_TOP', 10);
 
 	/**
 	 * bottom margin
 	 */
-	define ('PDF_MARGIN_BOTTOM', 25);
+	define ('PDF_MARGIN_BOTTOM', 10);
 
 	/**
 	 * left margin
@@ -134,7 +134,10 @@
 	/**
 	 * ratio used to adjust the conversion of pixels to user units
 	 */
+	
 	define ('PDF_IMAGE_SCALE_RATIO', 1.25);
+
+	//define ('PDF_IMAGE_SCALE_RATIO', 1);
 
 	/**
 	 * magnification factor for titles

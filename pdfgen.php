@@ -26,7 +26,8 @@ class noriContent {
 	var $text;	
 	var $excerpt;	
 	var $date;
-	var $type;		
+	var $type;
+	var $maincolor;		
 
 /*	Wordpress Content Layer.
 * 	Here I make a content object for later use in the pdf generation
@@ -70,15 +71,16 @@ class noriContent {
 		$args = array( 
 			'post_type' => 'attachment', 
 			'post_mime_type' => 'image',
-			'post_parent' => $id
+			'post_parent' => $id,
+			'exclude'=> $thumbid
 		);	
 		$images = get_children($args);			
 		//print_r($images);
 		if($images):			
 			$this->contentimages = array();
-			foreach($images as $key=>$image) {				
+			foreach($images as $image) {				
 				$src = wp_get_attachment_url($image->ID);							
-				$this->contentimages[$key] = array(
+				$this->contentimages[] = array(
 					'id' => $image->ID,
 					'src' => getFullPath($src),
 					'title' => html_entity_decode(get_the_title($image->ID), ENT_QUOTES, 'UTF-8')
@@ -90,7 +92,11 @@ class noriContent {
 		$this->excerpt = $article->post_excerpt;
 
 		//Type
-		$this->type = get_post_type($article->ID);
+		$ptype = get_post_type($article->ID);
+		$ptypeobj = get_post_type_object($ptype);
+		$this->type = $ptypeobj->labels->name; 
+
+		$this->setArticleTypeColor($ptype);
 
 		// Print text using writeHTMLCell()
 		$pretext = apply_filters('the_content', $article->post_content);
@@ -99,6 +105,38 @@ class noriContent {
 
 		$this->domParser($pretext);		
 	}
+
+	// cambia ciertos atributos basado en el tipo de contenido
+	public function setArticleTypeColor($type) {
+		switch($type):
+
+			case('ayc_postcur'):
+				$this->maincolor = '#36937F';								
+			break;
+
+			case('ayc_artcrit'):
+				$this->maincolor = '#8F5D86';
+			break;
+
+			case('ayc_cronica'):
+				$this->maincolor = '#DC9A51';
+			break;
+
+			case('ayc_entrevista'):
+				$this->maincolor = '#6778B4';
+			break;
+
+			case('ayc_ensayo'):
+				$this->maincolor = '#55536C';
+			break;
+
+			case('post'):
+				$this->maincolor = '#B2BA8F';
+			break;			
+
+		endswitch;
+	}
+
 
 	/*
 	*	Using PHP Dom, parse all the main content and get a clean HTML array with only the essential stuff, classified by tag name
@@ -110,7 +148,7 @@ class noriContent {
 
 		//Strip tags
 
-		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>');
+		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>, <img>');
 
 		$domdoc = new DOMDocument();
 		
@@ -158,22 +196,25 @@ class noriPDF extends TCPDF {
 
         // Set font        
         $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+		$this->setTextColorArray($this->convertHTMLColorToDec($this->maincolor));
 		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
         $this->setFontSize(10);
         // Title
-        $this->Cell(0, 15, $this->art_type, 0, false, 'L', 0, '', 0, false, 'M', 'M');
+        $this->Cell(0, 8, $this->art_type, 0, false, 'L', 0, '', 0, false, 'M', 'M');
+        
     }
 
     // Page footer
     public function Footer() {
         // Position at 15 mm from bottom
-        $this->SetY(-15);
+        $this->SetY(-7);
         // Set font
         $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+        $this->setTextColorArray($this->convertHTMLColorToDec($this->maincolor));
 		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
         $this->setFontSize(10);
         // Page number
-        $this->Cell(0, 10, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 0, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
 
     //Procesa las imágenes del capítulo
@@ -209,40 +250,11 @@ class noriPDF extends TCPDF {
     	$pagesize = array($page_height,$page_width);
 
     	$this->setPageFormat($pagesize, 'P');
+    	$this->AddPage();
 	}
 
 
-	// cambia ciertos atributos basado en el tipo de contenido
-	public function articleType($type) {
-		switch($type):
-
-			case('ayc_postcur'):
-				$this->maincolor = '#36937F';								
-			break;
-
-			case('ayc_artcrit'):
-				$this->maincolor = '#8F5D86';
-			break;
-
-			case('ayc_cronica'):
-				$this->maincolor = '#DC9A51';
-			break;
-
-			case('ayc_entrevista'):
-				$this->maincolor = '#6778B4';
-			break;
-
-			case('ayc_ensayo'):
-				$this->maincolor = '#55536C';
-			break;
-
-			case('post'):
-				$this->maincolor = '#B2BA8F';
-			break;			
-
-		endswitch;
-	}
-
+	
 	public function setBlackColorText() {
 		$this->setColor('text', 0, 0, 0, 100);
 	}
@@ -273,31 +285,23 @@ class noriPDF extends TCPDF {
 		$this->Ln(4);
 	}
 
-	public function mainImage($article_layout, $mainimage) {
-		switch($article_layout):
-			case('standard_layout'):			
-				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'L', 1, 300, 'C', false, false, false, true, false, false);														
+	public function mainImage($article_layout, $mainimage) {		
+				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
 				//The image is tall, I need a new page
 				$curY = $this->getImageRBY();
-				if( $curY > 200):
+				if( $curY > 220):
 					$this->addPage();
 				else:					
-					$this->SetY($curY + 8);
-				endif;
-			break;
-			default:
-				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'L', 1, 300, 'C', false, false, false, true, false, false);	
-				$this->addPage();					
-			break;
-		endswitch;
+					$this->SetY($curY + 4);
+				endif;			
 	}
 
 	//Processes the initial article content: Title, author, mainimage, date.
 
 	public function articleIntro($content, $layout) {
 		$mainimage = $content->mainimage;
-		
-		if($mainimage){						
+			
+		if($mainimage){										
 				$this->mainImage($layout, $mainimage);						 						
 			}
 		
@@ -358,72 +362,103 @@ class noriPDF extends TCPDF {
     	$content = new noriContent;
     	$content->WPLayer($postid);
 
-    	$layout = 'standard_layout';
+    	$this->maincolor = $content->maincolor;     	
+
+    	$contentimages = $content->contentimages;
+    	$numimages = count($content->contentimages);
+
+    	if($numimages >= 1):
+    		$layout = 'images_layout';
+    	else:
+	    	$layout = 'standard_layout';
+	    endif;
+    	
+    			
+		//Count of chapter page, first page has always three columns, second page has two columns.
+    	$chapter_page = 0;
+
+    	//Need to count images and make holes for them...
+
+		//Page region layouts		
 
     	$this->art_type = $content->type;
-    	$this->articleType($content->type);    	
+    	//$this->articleType($content->type);    	
 
     	$this->initMagazine();		
 		
-		//Indice
-		$this->addPage();
+		//Indice		
 		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
 
 		//Article Intro
-		$this->articleIntro($content, $layout);
-		
+
+		$this->startPageGroup();
+		$this->articleIntro($content, $layout);	
+
+			if($layout == 'standard_layout'):
+
+				$this->setEqualColumns(3, 60);	
+				$cellheight = 0;
+				$cellwidth = 0;
+
+			elseif($layout == 'images_layout'):
+				$this->setEqualColumns();
+				$first_image = $content->contentimages[0];
+
+				$cellheight = 0;
+				$cellwidth = 70;			
+			
+
+		endif;
+
 		//Contenido
-		// Set font
-		//$this->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight , false);		
-		$this->setFontSize(9);	
 		
-
-		//Split this in more calls maybe?
-
-		$this->setEqualColumns(3, 60);
-		$this->setCellHeightRatio(1.25);
-
+		$this->setFontSize(9);			
 		
-		$paragraphs = $content->text;
+		$this->setCellHeightRatio(1.25);	 		 		
 		
-		$this->selectColumn();
+		$paragraphs = $content->text;		
 
-		$this->setBlackColorText();
+		$this->setBlackColorText();			
 
-		//Cambiando dependiendo del tipo de elemento
+		foreach($paragraphs as $paragraph):				
 
-		foreach($paragraphs as $paragraph):
-			switch($paragraph['element']):
-				case('p'):
-					$this->setFontSize(9);
-					$this->multiCell(0, 0, $paragraph['content'] , 0, 'L', false);
-		 			$this->Ln(4);
-		 		break;
-		 		case('h1'):
-		 		case('h2'):
-		 		case('h3'):
-		 		case('h4'):
-		 		case('h5'):
-		 			$this->setFontSize(12);
-		 			$this->multiCell(0, 0, $paragraph['content'] , 0, 'L', false);
-		 			$this->Ln(4);
-		 		break;
-		 		default:
-		 			$this->multiCell(0, 0, $paragraph['content'] , 0, 'L', false);
-		 			$this->Ln(4);	
-			endswitch;		 	
-		endforeach;
-
-		// $this->selectColumn();
-		// $this->writeHTML($content->text , true, false, true, false, 'L');	
-		// $this->Ln();
-
+				switch($paragraph['element']):
+					case('p'):
+						$this->setFontSize(9);
+						$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);		 			
+			 		break;			 		
+			 		case('li'):
+			 			$this->setFontSize(9);			 			
+			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);		 			
+			 		case('h1'):
+			 		case('h2'):
+			 		case('h3'):
+			 		case('h4'):
+			 		case('h5'):
+			 			$this->setFontSize(12);
+			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);
+			 		break;
+			 		default:
+			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);	
+				endswitch;
+		endforeach;		
+			
+		//Reset things
 		$this->endPage();
+		$this->resetColumns();		
+		$this->setPageRegions();
 
-		$this->resetColumns();
+		//$this->setPage($regpage);
+		//$this->setAutoPageBreak(false);
+		//$this->Rect(0, 210, 230, 120, 'F', '', $this->convertHTMLColorToDec($this->maincolor));
+		//$this->Image($first_image['src'], 0, 210, 230, 120, '', '', 'M', true, 300, false, false, false, false, 'CM');
+		//$this->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
-		$contentimages = $content->contentimages;
-
+		//$this->Cell(0,0,);
     }
 
 }
@@ -486,6 +521,8 @@ function nori_makePdf($postobj) {
 	foreach($artids as $postid):
 		$pdf->Chapter($postid);
 	endforeach;
+
+
 
 	// Indice
 	// $pdf->setHeadText('Indice');
