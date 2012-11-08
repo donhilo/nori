@@ -46,6 +46,11 @@ define( 'TCPDF_PATH', NORI_LIBS . 'tcpdf/');
 define( 'NORI_FONTS', NORI_PATH . 'fonts/');
 define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
 
+//Development constant to enable only registered users to use the app.
+
+define( 'NORI_DEV', true);
+define('NORI_LOGO', NORI_PATH . 'logo/ayc_logo.png');
+
 //TCPDF Config
 
 //Configuration for language, you can change the file corresponding to the main language you want to use
@@ -130,74 +135,76 @@ function nori_addPost($postid) {
 
 //Nori central functions for selecting articles, adding pdfs, etc.
 function nori_centralOps() {
-	echo '<style>
-		h3.nori_headtitle {
-			font-size:18px
+	if(is_user_logged_in()):
+		echo '<style>
+			h3.nori_headtitle {
+				font-size:18px
+				}
+			ul.nori_articlelist li {
+				margin-bottom:6px;
+				padding:4px;
+				background-color:#f0f0f0;
+								}
+			div.nori_wrapper {
+				padding:6px;
+				border:1px dotted #ccc;
+				margin-bottom:12px;
 			}
-		ul.nori_articlelist li {
-			margin-bottom:6px;
-			padding:4px;
-			background-color:#f0f0f0;
-							}
-		div.nori_wrapper {
-			padding:6px;
-			border:1px dotted #ccc;
-			margin-bottom:12px;
-		}
-		.nori_wrapper input {
-			margin-bottom:3px;
-		}
+			.nori_wrapper input {
+				margin-bottom:3px;
+			}
 
-						</style>	';
-	echo '<div class="nori_wrapper">';
-	// Script start
-	$rustart = getrusage();
+							</style>	';
+		echo '<div class="nori_wrapper">';
+		// Script start
+		$rustart = getrusage();
 
-	if(isset($_POST['delete'])):
-			nori_EndSession();	
-	//Display the stored data
-	elseif(isset($_POST['generar']) && isset($_SESSION['articlesel'])):
-		//Set the articles
+		if(isset($_POST['delete'])):
+				nori_EndSession();	
+		//Display the stored data
+		elseif(isset($_POST['generar']) && isset($_SESSION['articlesel'])):
+			//Set the articles
 
-		$article_selection = $_SESSION['articlesel'];
+			$article_selection = $_SESSION['articlesel'];
 
-		nori_makePdf($article_selection);
+			nori_makePdf($article_selection);
 
-			//TIME CALCULATIONS
-			$ru = getrusage();
-			echo '<p class="nori_usage">';
-			echo "Este proceso utilizó " . rutime($ru, $rustart, "utime") .
-		    " ms para sus cálculos\n";
-			echo "Gastó " . rutime($ru, $rustart, "stime") .
-		    " en llamadas de sistema\n";
-		    echo '</p>';
+				//TIME CALCULATIONS
+				$ru = getrusage();
+				echo '<p class="nori_usage">';
+				echo "Este proceso utilizó " . rutime($ru, $rustart, "utime") .
+			    " ms para sus cálculos\n";
+				echo "Gastó " . rutime($ru, $rustart, "stime") .
+			    " ms en llamadas de sistema\n";
+			    echo '</p>';
 
-	//Add articles to session
-	elseif(isset($_POST['submit']) || isset($_SESSION['articlesel']) || !isset($_POST['delete'])):
+		//Add articles to session
+		elseif(isset($_POST['submit']) || isset($_SESSION['articlesel']) || !isset($_POST['delete'])):
 
-			if(isset($_POST['articleid']) && isset($_POST['submit'])):
-				nori_addPost($_POST['articleid']);
-			endif;
-				$artids = nori_SessionGet('articlesel');
-				if($artids):
-					$norids = explode(',', $artids);
-					printf(
-						'<h3 class="nori_headtitle">Artículos seleccionados:</h3>'
-						);
-					echo '<ul class="nori_articlelist">';
-					foreach($norids as $norid):
+				if(isset($_POST['articleid']) && isset($_POST['submit'])):
+					nori_addPost($_POST['articleid']);
+				endif;
+					$artids = nori_SessionGet('articlesel');
+					if($artids):
+						$norids = explode(',', $artids);
 						printf(
-							'<li> &bull; ' . get_the_title(intval($norid)) . ' <button class="remove" value="X" title="Quitar artículo">x</button></li>'
-						);	
-				endforeach;
-			echo '</ul>';
-			endif;
-		endif;		
+							'<h3 class="nori_headtitle">Artículos seleccionados:</h3>'
+							);
+						echo '<ul class="nori_articlelist">';
+						foreach($norids as $norid):
+							printf(
+								'<li> &bull; ' . get_the_title(intval($norid)) . ' <button class="remove" value="X" title="Quitar artículo">x</button></li>'
+							);	
+					endforeach;
+				echo '</ul>';
+				endif;
+			endif;		
 
-	//Show Form for adding articles
+		//Show Form for adding articles
 
-	nori_selectForm();
-	echo '</div><!--Nori Wrapper-->';
+		nori_selectForm();
+		echo '</div><!--Nori Wrapper-->';
+	endif;
 }
 
 

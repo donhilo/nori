@@ -148,7 +148,7 @@ class noriContent {
 
 		//Strip tags
 
-		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>, <img>');
+		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>, <img>, <li>');
 
 		$domdoc = new DOMDocument();
 		
@@ -165,7 +165,7 @@ class noriContent {
 			$div->parentNode->removeChild($div);
 		endforeach;
 
-		$cleandom = $xpath->query('//p | //h1 | //h2 | //h3 | //h4 | //h5');
+		$cleandom = $xpath->query('//p | //h1 | //h2 | //h3 | //h4 | //h5 | //li');
 
 		foreach($cleandom as $key=>$cd):
 			$this->text[$key]['element'] = $cd->nodeName;
@@ -192,30 +192,42 @@ class noriPDF extends TCPDF {
 
  //Page header
     public function Header() {
-    	$this->SetY(4);
+    	if($this->PageNo() != 1):
+	    	$this->SetY(4);
 
-        // Set font        
-        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
-		$this->setTextColorArray($this->convertHTMLColorToDec($this->maincolor));
-		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
-        $this->setFontSize(10);
-        // Title
-        $this->Cell(0, 8, $this->art_type, 0, false, 'L', 0, '', 0, false, 'M', 'M');
+	        // Set font        
+	        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+			$this->setFillColorArray($this->convertHTMLColorToDec($this->maincolor));
+			$this->setWhiteColorText();
+			$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
+	        $this->setFontSize(8);
+	        // Title Line
+	        $curY = $this->getY();
+	        $this->setDrawColorArray($this->convertHTMLColorToDec($this->maincolor));
+	        $this->Line(0, $curY, PDF_MARGIN_LEFT, $curY);
+	        // Title
+	        $this->setCellPadding(0.2);
+	        $this->Cell(30, 4, $this->art_type, 0, false, 'L', true, '', 0, false, 'M', 'M');
+	    endif;    
         
     }
 
     // Page footer
     public function Footer() {
-        // Position at 15 mm from bottom
-        $this->SetY(-7);
-        // Set font
-        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
-        $this->setTextColorArray($this->convertHTMLColorToDec($this->maincolor));
-		$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
-        $this->setFontSize(10);
-        // Page number
-        $this->Cell(0, 0, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
-    }
+    	if($this->pageNo() != 1):
+	        // Position at 15 mm from bottom
+	        $this->SetY(-7);
+	        // Set font
+	        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
+	        $this->setBlackColorText();
+			$this->SetFont($pt_sans, '', 10, NORI_GENFONTS . $pt_sans , false);		
+	        $this->setFontSize(10);
+	        // Page number   
+	        $curY = $this->getY();     
+	        $this->Line(160, $curY + 3, 183, $curY + 3);
+	        $this->Cell(0, 0, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
+	        endif;
+    }	
 
     //Procesa las imágenes del capítulo
     public function process_chapter_images($contentimages) {
@@ -287,13 +299,23 @@ class noriPDF extends TCPDF {
 
 	public function mainImage($article_layout, $mainimage) {		
 				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
+								
+				$this->setWhiteColorText();
+				$this->setFontSize(8);
+				
+				$curY = $this->getImageRBY();				
+				
+				$this->Text(0, $curY - 6 , $mainimage['title'], false, false, true, 0,0, 'R');
+
 				//The image is tall, I need a new page
-				$curY = $this->getImageRBY();
+				
 				if( $curY > 220):
 					$this->addPage();
 				else:					
 					$this->SetY($curY + 4);
-				endif;			
+				endif;
+
+				
 	}
 
 	//Processes the initial article content: Title, author, mainimage, date.
@@ -401,12 +423,11 @@ class noriPDF extends TCPDF {
 				$cellwidth = 0;
 
 			elseif($layout == 'images_layout'):
-				$this->setEqualColumns();
+				$this->setEqualColumns(3, 60);
 				$first_image = $content->contentimages[0];
 
 				$cellheight = 0;
-				$cellwidth = 70;			
-			
+				$cellwidth = 0;						
 
 		endif;
 
@@ -420,32 +441,7 @@ class noriPDF extends TCPDF {
 
 		$this->setBlackColorText();			
 
-		foreach($paragraphs as $paragraph):				
-
-				switch($paragraph['element']):
-					case('p'):
-						$this->setFontSize(9);
-						$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
-			 			$this->Ln(4);		 			
-			 		break;			 		
-			 		case('li'):
-			 			$this->setFontSize(9);			 			
-			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
-			 			$this->Ln(4);		 			
-			 		case('h1'):
-			 		case('h2'):
-			 		case('h3'):
-			 		case('h4'):
-			 		case('h5'):
-			 			$this->setFontSize(12);
-			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
-			 			$this->Ln(4);
-			 		break;
-			 		default:
-			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
-			 			$this->Ln(4);	
-				endswitch;
-		endforeach;		
+		$this->renderMainContent($paragraphs, $cellwidth);			
 			
 		//Reset things
 		$this->endPage();
@@ -460,6 +456,44 @@ class noriPDF extends TCPDF {
 
 		//$this->Cell(0,0,);
     }
+
+//Renders text content
+public function renderMainContent($content, $cellwidth){
+	foreach($content as $paragraph):				
+
+				switch($paragraph['element']):
+					case('p'):
+						$this->setFontSize(9);
+						$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);		 			
+			 		break;			 		
+			 		case('li'):
+			 			$this->setFontSize(9);
+			 			$list_item = '- ' . $paragraph['content'];
+			 			$this->multiCell($cellwidth, 0, $list_item , 0, 'L', false );
+			 			$this->Ln(2);
+			 		break;			 			
+			 		case('h1'):
+			 		case('h2'):
+			 		case('h3'):
+			 		case('h4'):
+			 		case('h5'):
+			 			$this->setFontSize(12);
+			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);
+			 		break;
+			 		default:
+			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->Ln(4);	
+				endswitch;
+		endforeach;	
+}
+
+//Hace la portada
+public function makeFrontpage() {
+	$this->AddPage();
+	$this->Image(NORI_LOGO, 150, 200, 60, 0);	
+}    
 
 }
 
@@ -514,7 +548,8 @@ function nori_makePdf($postobj) {
 
 	// ---------------------------------------------------------
 
-	//Strip post object of images
+	//Make frontpage
+	$pdf->makeFrontpage();
 
 	//Construct something to build each article
 
