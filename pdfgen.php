@@ -460,16 +460,16 @@ class noriPDF extends TCPDF {
 //Renders text content
 public function renderMainContent($content, $cellwidth){
 	foreach($content as $paragraph):				
-
+		$string_iso = iconv('iso-8859-1','utf-8',$paragraph['content']);
 				switch($paragraph['element']):
 					case('p'):
 						$this->setFontSize(9);
-						$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+						$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
 			 			$this->Ln(4);		 			
 			 		break;			 		
 			 		case('li'):
 			 			$this->setFontSize(9);
-			 			$list_item = '- ' . $paragraph['content'];
+			 			$list_item = '- ' . $string_iso;
 			 			$this->multiCell($cellwidth, 0, $list_item , 0, 'L', false );
 			 			$this->Ln(2);
 			 		break;			 			
@@ -479,19 +479,20 @@ public function renderMainContent($content, $cellwidth){
 			 		case('h4'):
 			 		case('h5'):
 			 			$this->setFontSize(12);
-			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
 			 			$this->Ln(4);
 			 		break;
 			 		default:
-			 			$this->multiCell($cellwidth, 0, $paragraph['content'] , 0, 'L', false );
+			 			$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
 			 			$this->Ln(4);	
 				endswitch;
 		endforeach;	
 }
 
 //Hace la portada
-public function makeFrontpage() {
+public function makeFrontpage() {	
 	$this->AddPage();
+	$this->Rect(0, 0, 230, 30, 'F', '', $this->convertHTMLColorToDec('#CA2525'));	
 	$this->Image(NORI_LOGO, 150, 200, 60, 0);	
 }    
 

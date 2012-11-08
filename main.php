@@ -193,7 +193,7 @@ function nori_centralOps() {
 						echo '<ul class="nori_articlelist">';
 						foreach($norids as $norid):
 							printf(
-								'<li> &bull; ' . get_the_title(intval($norid)) . ' <button class="remove" value="X" title="Quitar artículo">x</button></li>'
+								'<li> &bull; ' . get_the_title(intval($norid)) . '</li>'
 							);	
 					endforeach;
 				echo '</ul>';
