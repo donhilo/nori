@@ -460,7 +460,8 @@ class noriPDF extends TCPDF {
 //Renders text content
 public function renderMainContent($content, $cellwidth){
 	foreach($content as $paragraph):				
-		$string_iso = iconv('iso-8859-1','utf-8',$paragraph['content']);
+		//html_entity_decode(get_the_title($thumbid), ENT_QUOTES, 'UTF-8')
+		$string_iso = html_entity_decode($paragraph['content'], ENT_QUOTES, 'UTF-8');	
 				switch($paragraph['element']):
 					case('p'):
 						$this->setFontSize(9);
