@@ -27,7 +27,8 @@ class noriContent {
 	var $excerpt;	
 	var $date;
 	var $type;
-	var $maincolor;		
+	var $maincolor;	
+	var $htmlcontent;	
 
 /*	Wordpress Content Layer.
 * 	Here I make a content object for later use in the pdf generation
@@ -99,11 +100,12 @@ class noriContent {
 		$this->setArticleTypeColor($ptype);
 
 		// Print text using writeHTMLCell()
-		$pretext = apply_filters('the_content', $article->post_content);
-
+		$pretext = apply_filters('the_content', $article->post_content);		
+		$this->htmlcontent = $pretext;
 		//Clean HTML	
 
-		$this->domParser($pretext);		
+		$this->domParser($pretext);
+
 	}
 
 	// cambia ciertos atributos basado en el tipo de contenido
@@ -150,12 +152,20 @@ class noriContent {
 
 		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>, <img>, <li>');
 
+		// 	$pageDom = new DomDocument();    
+		//  $searchPage = mb_convert_encoding($htmlUTF8Page, 'HTML-ENTITIES', "UTF-8"); 
+  		// 	@$pageDom->loadHTML($htmlUTF8Page);
+
 		$domdoc = new DOMDocument();
-		
+		$utf8domdoc = mb_convert_encoding($cleantext, 'HTML-ENTITIES', "UTF-8");
+		$domdoc->loadHTML($utf8domdoc); 
+
 		//Turn stuff into an object for easey parsing
 
-		$domdoc->loadHTML('<?xml encoding="UTF-8">' . $cleantext);		
+		// $domdoc->loadHTML('<?xml encoding="UTF-8">' . $cleantext);		
 		
+		//$domdoc->loadHTML($cleantext);		
+
 		//Remove unwanted stuff		
 
 		$xpath = new DOMXPath($domdoc);
@@ -298,7 +308,7 @@ class noriPDF extends TCPDF {
 	}
 
 	public function mainImage($article_layout, $mainimage) {		
-				$this->Image($mainimage['src'], 0, 0, 230, 310, 'JPG', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
+				$this->Image($mainimage['src'], 0, 0, 230, 310, '', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
 								
 				$this->setWhiteColorText();
 				$this->setFontSize(8);
@@ -442,6 +452,7 @@ class noriPDF extends TCPDF {
 		$this->setBlackColorText();			
 
 		$this->renderMainContent($paragraphs, $cellwidth);			
+		
 			
 		//Reset things
 		$this->endPage();
@@ -459,18 +470,18 @@ class noriPDF extends TCPDF {
 
 //Renders text content
 public function renderMainContent($content, $cellwidth){
-	foreach($content as $paragraph):				
-		//html_entity_decode(get_the_title($thumbid), ENT_QUOTES, 'UTF-8')
-		$string_iso = $paragraph['content'];	
+	foreach($content as $paragraph):
+
+		$string_utf8 = $paragraph['content'];	
 				switch($paragraph['element']):
 					case('p'):
 						$this->setFontSize(9);
-						$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
-			 			$this->Ln(4);		 			
+						$this->multiCell($cellwidth, 0, $string_utf8 , 0, 'L', false );
+			 			$this->Ln(4);			 			
 			 		break;			 		
 			 		case('li'):
 			 			$this->setFontSize(9);
-			 			$list_item = '- ' . $string_iso;
+			 			$list_item = '- ' . $string_utf8;
 			 			$this->multiCell($cellwidth, 0, $list_item , 0, 'L', false );
 			 			$this->Ln(2);
 			 		break;			 			
@@ -480,11 +491,11 @@ public function renderMainContent($content, $cellwidth){
 			 		case('h4'):
 			 		case('h5'):
 			 			$this->setFontSize(12);
-			 			$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
+			 			$this->multiCell($cellwidth, 0, $string_utf8 , 0, 'L', false );
 			 			$this->Ln(4);
 			 		break;
 			 		default:
-			 			$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
+			 			$this->multiCell($cellwidth, 0, $string_utf8 , 0, 'L', false );
 			 			$this->Ln(4);	
 				endswitch;
 		endforeach;	
