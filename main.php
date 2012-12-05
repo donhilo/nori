@@ -74,16 +74,6 @@ require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
 
-/*
-Session Management
-We use sessions for storing article selection based on IDs.
-Code from http://devondev.com/simple-session-support/
-*/
-
-add_action('init', 'nori_StartSession', 1);
-add_action('wp_logout', 'nori_EndSession');
-add_action('wp_login', 'nori_EndSession');
-
 //The session stuff
 function nori_StartSession() {
     if(!session_id()) {
@@ -171,12 +161,12 @@ function nori_centralOps() {
 
 				//TIME CALCULATIONS
 				$ru = getrusage();
-				echo '<p class="nori_usage">';
+				echo '<!--<p class="nori_usage">';
 				echo "Este proceso utilizó " . rutime($ru, $rustart, "utime") .
 			    " ms para sus cálculos\n";
 				echo "Gastó " . rutime($ru, $rustart, "stime") .
 			    " ms en llamadas de sistema\n";
-			    echo '</p>';
+			    echo '</p>-->';
 
 		//Add articles to session
 		elseif(isset($_POST['submit']) || isset($_SESSION['articlesel']) || !isset($_POST['delete'])):
@@ -303,3 +293,27 @@ function rutime($ru, $rus, $index) {
 function getFullPath($url){
 return realpath(str_replace(get_bloginfo('url'), '.', $url));
 }
+
+/*
+Session Management
+We use sessions for storing article selection based on IDs.
+Code from http://devondev.com/simple-session-support/
+*/
+
+add_action('init', 'nori_StartSession', 1);
+add_action('wp_logout', 'nori_EndSession');
+add_action('wp_login', 'nori_EndSession');
+
+/*
+Ajax Functions
+
+//Make the pdf
+
+add_action('wp_ajax_nopriv_norimakepdf', 'norimakepdf_callback');
+add_action('wp_ajax_norimakepdf', 'norimakepdf_callback');
+
+//Add articles
+
+//Render resulting page
+
+*/

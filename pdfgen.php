@@ -5,7 +5,7 @@ PDF Generation scripts
 TODO:
 
 1. Define a layout implementation method
-2. Define layout profiles
+2. Define layout profiles in relation to number of images
 3. Create a system for styling child elements.
 
 */
@@ -27,8 +27,8 @@ class noriContent {
 	var $excerpt;	
 	var $date;
 	var $type;
-	var $maincolor;	
-	var $htmlcontent;	
+	var $maincolor;
+	var $numimages;		
 
 /*	Wordpress Content Layer.
 * 	Here I make a content object for later use in the pdf generation
@@ -38,6 +38,7 @@ class noriContent {
 	public function WPLayer($id) {
 		$article = get_post($id);		
 		$this->title = $article->post_title;
+		$this->numimages = 0;
 	
 		//If you need other type of autor you can also set it up.
 		//Im taking it from some custom post meta
@@ -86,7 +87,8 @@ class noriContent {
 					'src' => getFullPath($src),
 					'title' => html_entity_decode(get_the_title($image->ID), ENT_QUOTES, 'UTF-8')
 					);			
-			}			
+			}
+			$this->numimages = count($this->contentimages);
 		endif;
 
 		//Excerpt
@@ -100,12 +102,11 @@ class noriContent {
 		$this->setArticleTypeColor($ptype);
 
 		// Print text using writeHTMLCell()
-		$pretext = apply_filters('the_content', $article->post_content);		
-		$this->htmlcontent = $pretext;
+		$pretext = apply_filters('the_content', $article->post_content);
+
 		//Clean HTML	
 
-		$this->domParser($pretext);
-
+		$this->domParser($pretext);		
 	}
 
 	// cambia ciertos atributos basado en el tipo de contenido
@@ -152,20 +153,12 @@ class noriContent {
 
 		$cleantext = strip_tags($text, '<p>, <em>, <br>, <strong>, <h1>, <h2>, <h3>, <h4>, <h5>, <blockquote>, <div>, <cite>, <sup>, <img>, <li>');
 
-		// 	$pageDom = new DomDocument();    
-		//  $searchPage = mb_convert_encoding($htmlUTF8Page, 'HTML-ENTITIES', "UTF-8"); 
-  		// 	@$pageDom->loadHTML($htmlUTF8Page);
-
 		$domdoc = new DOMDocument();
-		$utf8domdoc = mb_convert_encoding($cleantext, 'HTML-ENTITIES', "UTF-8");
-		$domdoc->loadHTML($utf8domdoc); 
-
+		
 		//Turn stuff into an object for easey parsing
 
-		// $domdoc->loadHTML('<?xml encoding="UTF-8">' . $cleantext);		
+		$domdoc->loadHTML('<?xml encoding="UTF-8">' . $cleantext);		
 		
-		//$domdoc->loadHTML($cleantext);		
-
 		//Remove unwanted stuff		
 
 		$xpath = new DOMXPath($domdoc);
@@ -199,12 +192,80 @@ class noriPDF extends TCPDF {
 	var $art_type;	
 	var $maincolor;
 	var $pubtitle;
+	var $bleed_margin;
+	var $pagesize;
+	var $frontpage_image;
+
+
+	//Inicializa las páginas y cosas básicas de formato
+	public function initMagazine() {
+		// set display mode
+		$this->SetDisplayMode($zoom='fullpage', $layout='TwoColumnRight', $mode='UseNone');
+
+		// set pdf viewer preferences
+		$this->setViewerPreferences(array('Duplex' => 'DuplexFlipLongEdge'));
+
+    	$this->setBooklet(true);    	
+
+    	$this->bleed_margin = 5;
+
+    	$this->pagesize[0] = 230 + $this->bleed_margin;     	
+    	$this->pagesize[1] = 310 + $this->bleed_margin;
+    	
+
+    	$pagesize = array($this->pagesize[0], $this->pagesize[1]);
+
+    	$this->setPageFormat($pagesize, 'P');
+    	    	
+	}
+
+	public function setAllCropMarks() {
+		//Add crop marks.
+    	//Marcas de corte		
+		$this->cropMark($this->bleed_margin, $this->bleed_margin,1,10, 'TL');
+		$this->cropMark($this->pagesize[0] - $this->bleed_margin , $this->bleed_margin,1,10, 'TR');
+		$this->cropMark($this->pagesize[0] - $this->bleed_margin, $this->pagesize[1] - $this->bleed_margin,1,5, 'BR');
+		$this->cropMark($this->bleed_margin, $this->pagesize[1] - $this->bleed_margin,1,5, 'BL');
+	}
+
+	//Hace la portada
+	public function makeFrontpage($front_image) {	
+		$this->AddPage();
+		// get the current page break margin
+		$bMargin = $this->getBreakMargin();
+		// get current auto-page-break mode
+		$auto_page_break = $this->getAutoPageBreak();
+		// disable auto-page-break
+		$this->SetAutoPageBreak(false, 0);
+		// set bacground image
+		$img_file = $front_image;
+		$this->Image($img_file, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
+		// restore auto-page-break status
+		$this->SetAutoPageBreak($auto_page_break, $bMargin);
+		// set the starting point for the page content
+		$this->setPageMark();
+
+		$this->setAlpha(0.85);		
+		$this->Rect(160, 200, 60, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
+		$this->Rect(160, 265, 60, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
+		$this->setAlpha(1);
+		$this->Image(NORI_LOGO, 170, 210, 40, 0);
+		
+		$this->SetFont('bebasn', '', 16, NORI_GENFONTS . $pt_sans , false);
+		$this->Text(162,268, "RELATOS CRÍTICOS DE ARTE");
+		$this->SetLineWidth(2);
+		$this->Line(163, 280, 205, 280);			
+		$this->setFontSize(14);
+		$this->Text(162,285, "PUBLICACIÓN DEDICADA A LA ESCRITURA");
+		$this->setFontSize(12);
+		$this->Text(162,292, "ACERCA DEL ARTE CONTEMPORÁNEO DESDE CHILE");
+
+	}   
 
  //Page header
     public function Header() {
     	if($this->PageNo() != 1):
-	    	$this->SetY(4);
-
+	    	$this->SetY(4 + $this->bleed_margin);	    	
 	        // Set font        
 	        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
 			$this->setFillColorArray($this->convertHTMLColorToDec($this->maincolor));
@@ -226,7 +287,7 @@ class noriPDF extends TCPDF {
     public function Footer() {
     	if($this->pageNo() != 1):
 	        // Position at 15 mm from bottom
-	        $this->SetY(-7);
+	        $this->SetY(-7 - $this->bleed_margin);
 	        // Set font
 	        $pt_sans = $this->addTTFfont( NORI_FONTS . 'PT_Sans_Narrow/PT_Sans-Narrow-Web-Regular.ttf' ,'TrueTypeUnicode' , '', 32, NORI_GENFONTS );
 	        $this->setBlackColorText();
@@ -234,18 +295,19 @@ class noriPDF extends TCPDF {
 	        $this->setFontSize(10);
 	        // Page number   
 	        $curY = $this->getY();     
-	        $this->Line(160, $curY + 3, 183, $curY + 3);
+	        $this->Line(160, $curY - $this->bleed_margin + 3, 183, $curY - $this->bleed_margin + 3);
 	        $this->Cell(0, 0, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
 	        endif;
+	    $this->setAllCropMarks();    
     }	
 
     //Procesa las imágenes del capítulo
     public function process_chapter_images($contentimages) {
 	$this->AddPage();									
 			//Coordenadas
-			$y = 10;
+			$y = 10 + $this->bleed_margin;
 			foreach($contentimages as $image){				
-				$this->Image($image['src'], 10, $y, 80, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
+				$this->Image($image['src'], 10 + $this->bleed_margin, $y, 80, 0, 'JPG', '', 'M', true, 300, 'C', false, false, 1, false, false, false);
 				$curY = $this->getImageRBY();
 				$this->setY($curY);
 				$curY = ($curY+0.6);									
@@ -255,27 +317,6 @@ class noriPDF extends TCPDF {
 			}
 
 	}
-
-	//Inicializa las páginas y cosas básicas de formato
-	public function initMagazine() {
-		// set display mode
-		$this->SetDisplayMode($zoom='fullpage', $layout='TwoColumnRight', $mode='UseNone');
-
-		// set pdf viewer preferences
-		$this->setViewerPreferences(array('Duplex' => 'DuplexFlipLongEdge'));
-
-    	$this->setBooklet(true);    	
-
-    	$page_height = 310;
-    	$page_width = 230;
-
-    	$pagesize = array($page_height,$page_width);
-
-    	$this->setPageFormat($pagesize, 'P');
-    	$this->AddPage();
-	}
-
-
 	
 	public function setBlackColorText() {
 		$this->setColor('text', 0, 0, 0, 100);
@@ -308,7 +349,7 @@ class noriPDF extends TCPDF {
 	}
 
 	public function mainImage($article_layout, $mainimage) {		
-				$this->Image($mainimage['src'], 0, 0, 230, 310, '', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
+				$this->Image($mainimage['src'], 0 + $this->bleed_margin, 0 + $this->bleed_margin, 230, 310, 'JPG', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
 								
 				$this->setWhiteColorText();
 				$this->setFontSize(8);
@@ -401,12 +442,17 @@ class noriPDF extends TCPDF {
 
     	if($numimages >= 1):
     		$layout = 'images_layout';
+    		$this->frontpage_image = $content->mainimage['src'];
+    		var_dump($this->frontpage_image);
+    		
     	else:
 	    	$layout = 'standard_layout';
 	    endif;
     	
-    			
-		//Count of chapter page, first page has always three columns, second page has two columns.
+    	$this->addPage();	    		    	
+		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
+		
+
     	$chapter_page = 0;
 
     	//Need to count images and make holes for them...
@@ -414,13 +460,7 @@ class noriPDF extends TCPDF {
 		//Page region layouts		
 
     	$this->art_type = $content->type;
-    	//$this->articleType($content->type);    	
-
-    	$this->initMagazine();		
-		
-		//Indice		
-		$this->Bookmark($content->title, 0, 0, '', '', array(0,64,128));
-
+    	
 		//Article Intro
 
 		$this->startPageGroup();
@@ -435,7 +475,6 @@ class noriPDF extends TCPDF {
 			elseif($layout == 'images_layout'):
 				$this->setEqualColumns(3, 60);
 				$first_image = $content->contentimages[0];
-
 				$cellheight = 0;
 				$cellwidth = 0;						
 
@@ -452,36 +491,26 @@ class noriPDF extends TCPDF {
 		$this->setBlackColorText();			
 
 		$this->renderMainContent($paragraphs, $cellwidth);			
-		
 			
 		//Reset things
 		$this->endPage();
-		$this->resetColumns();		
-		$this->setPageRegions();
-
-		//$this->setPage($regpage);
-		//$this->setAutoPageBreak(false);
-		//$this->Rect(0, 210, 230, 120, 'F', '', $this->convertHTMLColorToDec($this->maincolor));
-		//$this->Image($first_image['src'], 0, 210, 230, 120, '', '', 'M', true, 300, false, false, false, false, 'CM');
-		//$this->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-
-		//$this->Cell(0,0,);
+		$this->resetColumns();				
     }
 
 //Renders text content
 public function renderMainContent($content, $cellwidth){
-	foreach($content as $paragraph):
-
-		$string_utf8 = $paragraph['content'];	
+	foreach($content as $paragraph):				
+		//html_entity_decode(get_the_title($thumbid), ENT_QUOTES, 'UTF-8')
+		$string_iso = $paragraph['content'];	
 				switch($paragraph['element']):
 					case('p'):
 						$this->setFontSize(9);
-						$this->multiCell($cellwidth, 0, $string_utf8 , 0, 'L', false );
-			 			$this->Ln(4);			 			
+						$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
+			 			$this->Ln(4);		 			
 			 		break;			 		
 			 		case('li'):
 			 			$this->setFontSize(9);
-			 			$list_item = '- ' . $string_utf8;
+			 			$list_item = '- ' . $string_iso;
 			 			$this->multiCell($cellwidth, 0, $list_item , 0, 'L', false );
 			 			$this->Ln(2);
 			 		break;			 			
@@ -491,22 +520,17 @@ public function renderMainContent($content, $cellwidth){
 			 		case('h4'):
 			 		case('h5'):
 			 			$this->setFontSize(12);
-			 			$this->multiCell($cellwidth, 0, $string_utf8 , 0, 'L', false );
+			 			$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
 			 			$this->Ln(4);
 			 		break;
 			 		default:
-			 			$this->multiCell($cellwidth, 0, $string_utf8 , 0, 'L', false );
+			 			$this->multiCell($cellwidth, 0, $string_iso , 0, 'L', false );
 			 			$this->Ln(4);	
 				endswitch;
 		endforeach;	
 }
 
-//Hace la portada
-public function makeFrontpage() {	
-	$this->AddPage();
-	$this->Rect(0, 0, 230, 30, 'F', '', $this->convertHTMLColorToDec('#CA2525'));	
-	$this->Image(NORI_LOGO, 150, 200, 60, 0);	
-}    
+ 
 
 }
 
@@ -520,9 +544,7 @@ function nori_makePdf($postobj) {
 
 	// create new PDF document
 
-	$pdf = new noriPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-	
+	$pdf = new noriPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);	
 
 	$pdf->setFontSubsetting(false);
 
@@ -561,24 +583,30 @@ function nori_makePdf($postobj) {
 
 	// ---------------------------------------------------------
 
-	//Make frontpage
-	$pdf->makeFrontpage();
+
+	$pdf->initMagazine();		
 
 	//Construct something to build each article
 
 	foreach($artids as $postid):
 		$pdf->Chapter($postid);
-	endforeach;
+	endforeach;	
 
+	//Make frontpage and put it in front
+	if($pdf->frontpage_image):
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
+		$pdf->makeFrontpage($pdf->frontpage_image);
+		$curpage = $pdf->pageNo();
+		$pdf->movePage($curpage, 1);
+	endif;
 
+	// Indice	
+	$pdf->addTOCPage();
+	$pdf->setFontSize(11);				
+	$pdf->addTOC(2,'courier', '.', 'Indice', '', array(128,0,0));	
+	$pdf->endTOCPage();
 
-	// Indice
-	// $pdf->setHeadText('Indice');
-	// $pdf->addTOCPage();
-	// $pdf->addTOC(1, 'courier', '.', 'Indice', '', array(128,0,0));
-
-	// end of TOC page
-	// $pdf->endTOCPage();
 
 	// ---------------------------------------------------------
 
