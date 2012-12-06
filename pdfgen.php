@@ -609,15 +609,16 @@ function nori_makePdf($postobj) {
 	$pdf->addTOC(2,'courier', '.', 'Indice', '', array(128,0,0));	
 	$pdf->endTOCPage();
 
-
 	// ---------------------------------------------------------
 
 	// Close and output PDF document
 	// This method has several options, check the source code documentation for more information.
 	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
-
-	echo '<p>El archivo está listo para descargar</p>';
-	echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf">Descargar</a></p>';	
+	
+	echo '<div class="alert alert-success alert-block made-pdf">';
+	echo '<h3>El archivo está listo para descargar</h3>';
+	echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt"></i> Descargar</a></p>';	
+	echo '</div>';
 	
 	//============================================================+
 	// END OF FILE

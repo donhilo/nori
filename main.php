@@ -150,9 +150,9 @@ function nori_centralOps() {
 						
 						
 						foreach($norids as $norid):
-							printf(
-								'<li data-id="' . $norid .'" id="selarticle-' . $norid .'"> &bull; ' . get_the_title(intval($norid)) . ' <span class="nori-ui articledel">x</span></li>'
-							);	
+							
+							echo '<li data-id="' . $norid .'" id="selarticle-' . $norid .'"> <i class="icon-move"></i> ' . get_the_title(intval($norid)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+							
 					endforeach;							
 
 					endif;	
@@ -246,15 +246,15 @@ function nori_selectForm() {
 					
 			if($_GET['norimake'] == 1):				
 
-				printf('<span class="nori-btn" id="generar-ajax" data-articles="'. $_SESSION['articlesel'] .'">Generar PDF (AJAX)</span>');
+				printf('<span class="nori-btn btn btn-success" id="generar-ajax" data-articles="'. $_SESSION['articlesel'] .'"><i class="icon-book icon-white"></i> Generar PDF</span>');
 
 			else:
-				printf('<span class="nori-btn" data-id="' . $post->ID .'" id="add-article">Añadir artículo</span>');				
-				printf('<a class="nori-btn" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '">Generar PDF</a>');
+				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i>Añadir</span>');				
+				printf('<a class="nori-btn btn" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-cog"></i> Componer libro </a>');
 			
 			endif;
 
-			printf('<span class="nori-btn" id="borrar-articulos" name="delete-all">Borrar todos los artículos</span>');
+			printf('<span class="nori-btn btn btn-inverse" id="borrar-articulos" name="delete-all"><i class="icon-white icon-trash"></i> Borrar todos los artículos</span>');
 		printf('<br/></div>');			
 				
 	}
@@ -324,7 +324,7 @@ function ajaxSessionNori() {
 			endif;
 			if(!in_array($id, $posts)):
 				nori_addPost($id);
-				echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> &bull; ' . get_the_title(intval($id)) . ' <span class="nori-ui articledel">x</span></li>';
+				echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
 			endif;
 			exit();
 		break;
@@ -364,6 +364,9 @@ function noristylesandscripts() {
 
 		wp_register_script('norijs', NORI_URL . '/js/nori.js', 'jquery-ui');
 		wp_enqueue_script('norijs');
+
+		wp_register_script('bootstrap', NORI_URL . '/js/bootstrap.min.js', 'jquery');
+		wp_enqueue_script('bootstrap');
 
 		wp_localize_script('norijs', 'noriAJAX', array(
 		 	'ajaxurl' => admin_url( 'admin-ajax.php' ),

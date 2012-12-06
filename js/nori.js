@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
 
 	$('#generar-ajax').on('click', function() {
 		articles = $(this).data('articles');
-		$('#noriresult').append('<img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/>  Generando PDF...');
+		$('#noriresult').append('<div class="alert"><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/>  Generando PDF...</div>');
 		console.log(articles);
 		$.ajax({
 			type: 'POST',
