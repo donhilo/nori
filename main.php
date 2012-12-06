@@ -142,22 +142,22 @@ function nori_centralOps() {
 		echo '<div class="nori_wrapper">';
 		
 		echo '<ul class="nori_articlelist">';
-		if(isset($_SESSION['articlesel'])):
+		// if(isset($_SESSION['articlesel'])):
 				
-					$artids = nori_SessionGet('articlesel');
-					if($artids):
-						$norids = explode(',', $artids);
+		// 			$artids = nori_SessionGet('articlesel');
+		// 			if($artids):
+		// 				$norids = explode(',', $artids);
 						
 						
-						foreach($norids as $norid):
+		// 				foreach($norids as $norid):
 							
-							echo '<li data-id="' . $norid .'" id="selarticle-' . $norid .'"> <i class="icon-move"></i> ' . get_the_title(intval($norid)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+		// 					echo '<li data-id="' . $norid .'" id="selarticle-' . $norid .'"> <i class="icon-move"></i> ' . get_the_title(intval($norid)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
 							
-					endforeach;							
+		// 			endforeach;							
 
-					endif;	
+		// 			endif;	
 		
-		endif;		
+		// endif;		
 
 		echo '</ul>';
 
@@ -322,9 +322,15 @@ function ajaxSessionNori() {
 			if(isset($_SESSION['articlesel'])):
 				$posts = explode(',', $_SESSION['articlesel']);
 			endif;
-			if(!in_array($id, $posts)):
-				nori_addPost($id);
-				echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+			if(is_array($posts)):
+				if(!in_array($id, $posts)):
+					nori_addPost($id);
+					echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+					//print_r($posts);
+				endif;
+			elseif($posts != $id):
+					nori_addPost($id);
+					echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';				
 			endif;
 			exit();
 		break;
@@ -339,9 +345,20 @@ function ajaxSessionNori() {
 			exit();
 		break;
 
+		case('populate'):
+			if(isset($_SESSION['articlesel'])):
+				$posts = explode(',', $_SESSION['articlesel']);
+				foreach($posts as $id):
+					echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+				endforeach;
+			endif;
+			exit();
+
 	endswitch;
 		
 }
+
+
 
 add_action('wp_ajax_ajaxSessionNori', 'ajaxSessionNori');
 add_action('wp_ajax_nopriv_ajaxSessionNori', 'ajaxSessionNori');
