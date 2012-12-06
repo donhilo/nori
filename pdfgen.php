@@ -159,8 +159,8 @@ class noriContent {
 		$domdoc = new DOMDocument();
 		
 		//Turn stuff into an object for easey parsing
-
-		$domdoc->loadHTML('<?xml encoding="UTF-8">' . $cleantext);		
+		$utf8domdoc = mb_convert_encoding($cleantext, 'HTML-ENTITIES', "UTF-8");
+		$domdoc->loadHTML($utf8domdoc);		
 		
 		//Remove unwanted stuff		
 
