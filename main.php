@@ -39,6 +39,7 @@ TODO:
 //Constants
 define( 'NORI_PATH', plugin_dir_path(__FILE__) );
 define( 'NORI_LIBS', NORI_PATH );
+define( 'NORI_URL', plugin_dir_url(__FILE__) );
 define( 'NORI_FILESPATH', WP_CONTENT_DIR . '/norifiles/');
 define( 'NORI_FILESURL', WP_CONTENT_URL . '/norifiles/');
 define( 'TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
@@ -103,7 +104,6 @@ function nori_SessionSet($key, $value) {
 //There will be also an option to store the selection in a personal URL that will be sent via mail
 
 function nori_addPost($postid) {
-
 	if(isset($_SESSION['articlesel'])){
 			//there is more than one article selected
 			$noriarts = $_SESSION['articlesel'];
@@ -123,76 +123,48 @@ function nori_addPost($postid) {
 		}
 }
 
+function nori_removePost($postid) {
+	if(isset($_SESSION['articlesel'])) {
+		$noriarts = $_SESSION['articlesel'];
+		
+		$ids = explode(',', $noriarts);
+		
+		unset($ids[$postid]);
+		
+		//$impids = implode(',' $ids);
+		nori_SessionSet('articlesel', $impids);			
+	}
+}
+
 //Nori central functions for selecting articles, adding pdfs, etc.
 function nori_centralOps() {
-	if(is_user_logged_in()):
-		echo '<style>
-			h3.nori_headtitle {
-				font-size:18px
-				}
-			ul.nori_articlelist li {
-				margin-bottom:6px;
-				padding:4px;
-				background-color:#f0f0f0;
-								}
-			div.nori_wrapper {
-				padding:6px;
-				border:1px dotted #ccc;
-				margin-bottom:12px;
-			}
-			.nori_wrapper input {
-				margin-bottom:3px;
-			}
-
-							</style>	';
+	if(is_user_logged_in()):		
 		echo '<div class="nori_wrapper">';
-		// Script start
-		$rustart = getrusage();
-
-		if(isset($_POST['delete'])):
-				nori_EndSession();	
-		//Display the stored data
-		elseif(isset($_POST['generar']) && isset($_SESSION['articlesel'])):
-			//Set the articles
-
-			$article_selection = $_SESSION['articlesel'];
-
-			nori_makePdf($article_selection);
-
-				//TIME CALCULATIONS
-				$ru = getrusage();
-				echo '<!--<p class="nori_usage">';
-				echo "Este proceso utilizó " . rutime($ru, $rustart, "utime") .
-			    " ms para sus cálculos\n";
-				echo "Gastó " . rutime($ru, $rustart, "stime") .
-			    " ms en llamadas de sistema\n";
-			    echo '</p>-->';
-
-		//Add articles to session
-		elseif(isset($_POST['submit']) || isset($_SESSION['articlesel']) || !isset($_POST['delete'])):
-
-				if(isset($_POST['articleid']) && isset($_POST['submit'])):
-					nori_addPost($_POST['articleid']);
-				endif;
+		
+		echo '<ul class="nori_articlelist">';
+		if(isset($_SESSION['articlesel'])):
+				
 					$artids = nori_SessionGet('articlesel');
 					if($artids):
 						$norids = explode(',', $artids);
-						printf(
-							'<h3 class="nori_headtitle">Artículos seleccionados:</h3>'
-							);
-						echo '<ul class="nori_articlelist">';
+						
+						
 						foreach($norids as $norid):
 							printf(
-								'<li> &bull; ' . get_the_title(intval($norid)) . '</li>'
+								'<li data-id="' . $norid .'" id="selarticle-' . $norid .'"> &bull; ' . get_the_title(intval($norid)) . ' <span class="nori-ui articledel">x</span></li>'
 							);	
-					endforeach;
-				echo '</ul>';
-				endif;
-			endif;		
+					endforeach;							
+
+					endif;	
+		
+		endif;		
+
+		echo '</ul>';
 
 		//Show Form for adding articles
 
 		nori_selectForm();
+
 		echo '</div><!--Nori Wrapper-->';
 	endif;
 }
@@ -270,17 +242,21 @@ class Nori_Widget extends WP_Widget {
 function nori_selectForm() {
 	global $post;	
 	//Adds Form to article selection
-		printf('<div class="formwrapper">
-				<br/>
-				<form id="selart" action="" method="POST">
-					<input type="hidden" name="articleid" data-extra="'.$post->post_title.'" value="'.$post->ID.'"/>
-					<input type="submit" value="Añadir artículo" id="submit" name="submit"/>					
-					<input type="submit" value="Generar PDF" id="pdfgen" name="generar"/>
-					<input type="submit" value="Vaciar selección" id="delete" name="delete"/>
-				</form>
-				<br/>
-				</div>'
-				);		
+		printf('<div class="formwrapper"><br/>');												
+					
+			if($_GET['norimake'] == 1):				
+
+				printf('<span class="nori-btn" id="generar-ajax" data-articles="'. $_SESSION['articlesel'] .'">Generar PDF (AJAX)</span>');
+
+			else:
+				printf('<span class="nori-btn" data-id="' . $post->ID .'" id="add-article">Añadir artículo</span>');				
+				printf('<a class="nori-btn" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '">Generar PDF</a>');
+			
+			endif;
+
+			printf('<span class="nori-btn" id="borrar-articulos" name="delete-all">Borrar todos los artículos</span>');
+		printf('<br/></div>');			
+				
 	}
 
 //Calcular uso de tiempo
@@ -291,8 +267,21 @@ function rutime($ru, $rus, $index) {
 
 //Trabajar por directorios
 function getFullPath($url){
-return realpath(str_replace(get_bloginfo('url'), '.', $url));
+	//return realpath(str_replace(get_bloginfo('url'), '.', $url));
+	return $url;
 }
+
+//Añadir una página especial para el procesado del pdf, pago y otras hierbas
+
+function noriSection() {
+	$getnoripost = $_GET['norimake'];
+	if($getnoripost == 1):
+		include( NORI_PATH . 'render.php');	
+		exit();
+	endif;
+}
+
+add_action('template_redirect', 'noriSection', 1);
 
 /*
 Session Management
@@ -306,14 +295,83 @@ add_action('wp_login', 'nori_EndSession');
 
 /*
 Ajax Functions
-
+*/
 //Make the pdf
 
-add_action('wp_ajax_nopriv_norimakepdf', 'norimakepdf_callback');
-add_action('wp_ajax_norimakepdf', 'norimakepdf_callback');
+
+function ajaxNori() {	
+	$articles = $_POST['articlelist'];
+	if($articles):		
+		nori_makePdf($articles);
+		exit();
+	endif;
+}
+
+add_action('wp_ajax_ajaxNori', 'ajaxNori');
+add_action('wp_ajax_nopriv_ajaxNori', 'ajaxNori');
+
+function ajaxSessionNori() {
+	global $post;
+	$command = $_POST['command'];
+	$id = $_POST['id'];
+	
+	switch($command):
+		case('add'):
+			$posts = 0;
+			//Check that is not the same post added twice
+			if(isset($_SESSION['articlesel'])):
+				$posts = explode(',', $_SESSION['articlesel']);
+			endif;
+			if(!in_array($id, $posts)):
+				nori_addPost($id);
+				echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> &bull; ' . get_the_title(intval($id)) . ' <span class="nori-ui articledel">x</span></li>';
+			endif;
+			exit();
+		break;
+		
+		case('delete'):
+			nori_removePost($id);
+			exit();
+		break;
+		
+		case('delete-all'):
+			nori_EndSession();
+			exit();
+		break;
+
+	endswitch;
+		
+}
+
+add_action('wp_ajax_ajaxSessionNori', 'ajaxSessionNori');
+add_action('wp_ajax_nopriv_ajaxSessionNori', 'ajaxSessionNori');
+
 
 //Add articles
 
 //Render resulting page
 
-*/
+//Styles and scripts
+
+function noristylesandscripts() {	
+	
+	//if(!is_admin()):
+		wp_register_style('noricss', NORI_URL . '/nori.css');
+		wp_enqueue_style('noricss');
+
+		wp_register_script('jquery-ui', NORI_URL . '/js/jquery-ui-1.9.2.custom.min.js', 'jquery');
+		wp_enqueue_script('jquery-ui');
+
+		wp_register_script('norijs', NORI_URL . '/js/nori.js', 'jquery-ui');
+		wp_enqueue_script('norijs');
+
+		wp_localize_script('norijs', 'noriAJAX', array(
+		 	'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		 	'noriurl' => NORI_URL
+		 	));
+	//endif;
+	
+}
+
+add_action('wp_enqueue_scripts', 'noristylesandscripts');
+

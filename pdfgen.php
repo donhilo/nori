@@ -35,7 +35,7 @@ class noriContent {
 *
 */
 
-	public function WPLayer($id) {
+	public function WPLayer($id) {		
 		$article = get_post($id);		
 		$this->title = $article->post_title;
 		$this->numimages = 0;
@@ -68,6 +68,9 @@ class noriContent {
 				$src = wp_get_attachment_image_src($thumbid, 'full');
 				$this->mainimage['src'] = getFullPath($src[0]);
 				$this->mainimage['title'] = html_entity_decode(get_the_title($thumbid), ENT_QUOTES, 'UTF-8');
+				$this->mainimage['width'] = $src[1];
+				$this->mainimage['height'] = $src[2];
+				$this->mainimage['relation'] = $this->mainimage['width'] / $this->mainimage['height'];
 			}
 
 		$args = array( 
@@ -246,19 +249,19 @@ class noriPDF extends TCPDF {
 		$this->setPageMark();
 
 		$this->setAlpha(0.85);		
-		$this->Rect(160, 200, 60, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
-		$this->Rect(160, 265, 60, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
+		$this->Rect(160, 200, 57, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
+		$this->Rect(160, 265, 57, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
 		$this->setAlpha(1);
 		$this->Image(NORI_LOGO, 170, 210, 40, 0);
 		
-		$this->SetFont('bebasn', '', 16, NORI_GENFONTS . $pt_sans , false);
+		$this->SetFont('bebasn', '', 18, NORI_GENFONTS . $pt_sans , false);
 		$this->Text(162,268, "RELATOS CRÍTICOS DE ARTE");
 		$this->SetLineWidth(2);
-		$this->Line(163, 280, 205, 280);			
-		$this->setFontSize(14);
-		$this->Text(162,285, "PUBLICACIÓN DEDICADA A LA ESCRITURA");
+		$this->Line(163, 280, 215, 280);			
 		$this->setFontSize(12);
-		$this->Text(162,292, "ACERCA DEL ARTE CONTEMPORÁNEO DESDE CHILE");
+		$this->Text(162,282, "PUBLICACIÓN DEDICADA A LA ESCRITURA");
+		$this->setFontSize(10);
+		$this->Text(162,287, "ACERCA DEL ARTE CONTEMPORÁNEO DESDE CHILE");
 
 	}   
 
@@ -295,7 +298,7 @@ class noriPDF extends TCPDF {
 	        $this->setFontSize(10);
 	        // Page number   
 	        $curY = $this->getY();     
-	        $this->Line(160, $curY - $this->bleed_margin + 3, 183, $curY - $this->bleed_margin + 3);
+	        $this->Line(160, $curY + 3, 183, $curY + 3);
 	        $this->Cell(0, 0, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
 	        endif;
 	    $this->setAllCropMarks();    
@@ -348,9 +351,11 @@ class noriPDF extends TCPDF {
 		$this->Ln(4);
 	}
 
-	public function mainImage($article_layout, $mainimage) {		
-				$this->Image($mainimage['src'], 0 + $this->bleed_margin, 0 + $this->bleed_margin, 230, 310, 'JPG', '', 'T', 1, 300, 'C', false, false, false, true, false, false);														
-								
+	public function mainImage($article_layout, $mainimage) {
+				$relation = $mainimage['relation'];
+				$comp_height = round(230 / $relation, 0, PHP_ROUND_HALF_UP);
+				$this->Image($mainimage['src'], 0 + $this->bleed_margin, 0 + $this->bleed_margin, 230, $comp_height , '', '', 'T', 1, 300, 'C', false, false, false, true, false, false);
+				
 				$this->setWhiteColorText();
 				$this->setFontSize(8);
 				
@@ -442,9 +447,7 @@ class noriPDF extends TCPDF {
 
     	if($numimages >= 1):
     		$layout = 'images_layout';
-    		$this->frontpage_image = $content->mainimage['src'];
-    		var_dump($this->frontpage_image);
-    		
+    		$this->frontpage_image = $content->mainimage['src'];    		    		
     	else:
 	    	$layout = 'standard_layout';
 	    endif;
@@ -534,8 +537,7 @@ public function renderMainContent($content, $cellwidth){
 
 }
 
-function nori_makePdf($postobj) {
-
+function nori_makePdf($postobj) {	
 
 	$artids = explode(',', $postobj);
 	
