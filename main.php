@@ -3,7 +3,7 @@
 Plugin Name: Nori
 Plugin URI: http://www.apie.cl
 Description: PDF Generation for Wordpress using Tcpdf library.
-Version: 0.1
+Version: 0.4alpha
 Author: Pablo Selín Carrasco Armijo
 Author URI: http://www.apie.cl
 License: GPL2
@@ -124,15 +124,14 @@ function nori_addPost($postid) {
 }
 
 function nori_removePost($postid) {
-	if(isset($_SESSION['articlesel'])) {
-		$noriarts = $_SESSION['articlesel'];
-		
-		$ids = explode(',', $noriarts);
+	if(isset($_SESSION['articlesel'])) {		
+		$noriarts = $_SESSION['articlesel'];		
+		$ids = explode(',', $noriarts);		
 		
 		unset($ids[$postid]);
 		
-		//$impids = implode(',' $ids);
-		nori_SessionSet('articlesel', $impids);			
+		$impids_del = implode(',', $ids);		
+		nori_SessionSet('articlesel', $impids_del);			
 	}
 }
 
@@ -141,23 +140,7 @@ function nori_centralOps() {
 	if(is_user_logged_in()):		
 		echo '<div class="nori_wrapper">';
 		
-		echo '<ul class="nori_articlelist">';
-		// if(isset($_SESSION['articlesel'])):
-				
-		// 			$artids = nori_SessionGet('articlesel');
-		// 			if($artids):
-		// 				$norids = explode(',', $artids);
-						
-						
-		// 				foreach($norids as $norid):
-							
-		// 					echo '<li data-id="' . $norid .'" id="selarticle-' . $norid .'"> <i class="icon-move"></i> ' . get_the_title(intval($norid)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
-							
-		// 			endforeach;							
-
-		// 			endif;	
-		
-		// endif;		
+		echo '<ul class="nori_articlelist">';		
 
 		echo '</ul>';
 
@@ -170,75 +153,6 @@ function nori_centralOps() {
 }
 
 
-//Widget to add articles to selection, i have to clean lots of example code.
-
-
-add_action( 'widgets_init', 'nori_widget' );
-
-
-function nori_widget() {
-	register_widget( 'Nori_Widget' );
-}
-
-class Nori_Widget extends WP_Widget {
-
-	function Nori_Widget() {
-		$widget_ops = array( 'classname' => 'nori_widget', 'description' => __('Widget de selección de artículos ', 'nori') );
-		
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'nori-widget' );
-		
-		$this->WP_Widget( 'nori-widget', __('Selector de artículos', 'nori'), $widget_ops, $control_ops );
-	}
-	
-	function widget( $args, $instance ) {
-		global $post;
-		extract( $args );		
-		//Our variables from the widget settings.
-		$title = apply_filters('widget_title', __('Selecci&oacute;n de art&iacute;culos') );
-		$name = $instance['name'];
-		$show_info = isset( $instance['show_info'] ) ? $instance['show_info'] : false;
-
-		echo $before_widget;
-
-		// Display the widget title 
-		if ( $title )
-			echo $before_title . $title . $after_title;
-
-
-		nori_centralOps();		
-		
-		echo $after_widget;
-	}
-
-	//Update the widget 
-	 
-	function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-
-		//Strip tags from title and name to remove HTML 
-		$instance['title'] = strip_tags( $new_instance['title'] );
-		$instance['name'] = strip_tags( $new_instance['name'] );		
-
-		return $instance;
-	}
-
-	//Crappy stuff, please clean
-	function form( $instance ) {
-
-		//Set up some default widget settings.
-		$defaults = array( 'title' => __('Selector de articulos', 'nori_widget'));
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
-
-		//Widget Title: Text Input.
-		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:', 'example'); ?></label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:100%;" />
-		</p>		
-
-	<?php
-	}
-}
-
 function nori_selectForm() {
 	global $post;	
 	//Adds Form to article selection
@@ -246,7 +160,7 @@ function nori_selectForm() {
 					
 			if($_GET['norimake'] == 1):				
 
-				printf('<span class="nori-btn btn btn-success" id="generar-ajax" data-articles="'. $_SESSION['articlesel'] .'"><i class="icon-book icon-white"></i> Generar PDF</span>');
+				printf('<span class="nori-btn btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> Generar PDF</span>');
 
 			else:
 				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i>Añadir</span>');				
@@ -300,7 +214,7 @@ Ajax Functions
 
 
 function ajaxNori() {	
-	$articles = $_POST['articlelist'];
+	$articles = $_SESSION['articlesel'];
 	if($articles):		
 		nori_makePdf($articles);
 		exit();
@@ -325,8 +239,7 @@ function ajaxSessionNori() {
 			if(is_array($posts)):
 				if(!in_array($id, $posts)):
 					nori_addPost($id);
-					echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
-					//print_r($posts);
+					echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';					
 				endif;
 			elseif($posts != $id):
 					nori_addPost($id);
@@ -335,8 +248,8 @@ function ajaxSessionNori() {
 			exit();
 		break;
 		
-		case('delete'):
-			nori_removePost($id);
+		case('delete'):			
+			nori_removePost(intval($id));
 			exit();
 		break;
 		
@@ -350,9 +263,18 @@ function ajaxSessionNori() {
 				$posts = explode(',', $_SESSION['articlesel']);
 				foreach($posts as $id):
 					echo '<li data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
-				endforeach;
+				endforeach;				
 			endif;
 			exit();
+		break;
+		
+		case('update'):
+			if(isset($_SESSION['updatedList'])):	
+				nori_EndSession();
+				nori_SessionSet('articlesel', $_SESSION['updatedList']);
+			endif;
+			exit();
+		break;		
 
 	endswitch;
 		
@@ -379,7 +301,10 @@ function noristylesandscripts() {
 		wp_register_script('jquery-ui', NORI_URL . '/js/jquery-ui-1.9.2.custom.min.js', 'jquery');
 		wp_enqueue_script('jquery-ui');
 
-		wp_register_script('norijs', NORI_URL . '/js/nori.js', 'jquery-ui');
+		wp_register_script('jquery-cookie', NORI_URL . '/js/jquery.cookie.js', 'jquery');
+		wp_enqueue_script('jquery-cookie');
+
+		wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery-ui', 'jquery-cookie'));
 		wp_enqueue_script('norijs');
 
 		wp_register_script('bootstrap', NORI_URL . '/js/bootstrap.min.js', 'jquery');

@@ -44,7 +44,8 @@ jQuery(document).ready(function($) {
 			url: noriAJAX.ajaxurl,
 			data: {
 				action: 'ajaxNori',
-				articlelist : articles
+				articlelist : articles,
+				forprint: 'no'
 			},
 			success: function(data, textStatus, XMLHttpRequest) {
 				$('#noriresult').empty().hide()
@@ -87,6 +88,7 @@ jQuery(document).ready(function($) {
 			},
 			success: function(data, textStatus, XMLHttpRequest) {
 				$('.nori_articlelist').empty();
+				$('#generar-ajax').data('articles', '');
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
 				$('.nori_articlelist').prepend('<li>ERROR</li>');	
@@ -95,7 +97,11 @@ jQuery(document).ready(function($) {
 	});
 //Different calls cause I call this stuff via AJAX
 	$(document).on('click', '.articledel', function() {
+		
 		parentli = $(this).parent('li')
+		articles = $('#generar-ajax').data('articles').split(',');
+		deletedarticle = articles.indexOf(parentli.data('id'));
+
 		$.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
@@ -105,7 +111,10 @@ jQuery(document).ready(function($) {
 				id: parentli.data('id')
 			},
 			success: function(data, textStatus, XMLHttpRequest) {
+				articles.splice(deletedarticle,1);
+				console.log(deletedarticle);
 				parentli.remove();
+
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
 				$('.nori_articlelist').prepend('<li>ERROR</li>');	

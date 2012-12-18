@@ -208,13 +208,16 @@ class noriPDF extends TCPDF {
 		// set pdf viewer preferences
 		$this->setViewerPreferences(array('Duplex' => 'DuplexFlipLongEdge'));
 
-    	$this->setBooklet(true);    	
+    	//Makes a nasty bug with the TOCPAGE
+    	//$this->setBooklet(true);    	
 
     	$this->bleed_margin = 5;
 
     	$this->pagesize[0] = 230 + $this->bleed_margin;     	
     	$this->pagesize[1] = 310 + $this->bleed_margin;
     	
+    	$this->frontpage_image = NORI_URL . 'examples/portada_test.jpg';
+    	$this->index_image = NORI_URL . 'examples/creditos_test.jpg';
 
     	$pagesize = array($this->pagesize[0], $this->pagesize[1]);
 
@@ -233,36 +236,22 @@ class noriPDF extends TCPDF {
 
 	//Hace la portada
 	public function makeFrontpage($front_image) {	
-		$this->AddPage();
-		// get the current page break margin
-		$bMargin = $this->getBreakMargin();
-		// get current auto-page-break mode
 		$auto_page_break = $this->getAutoPageBreak();
-		// disable auto-page-break
 		$this->SetAutoPageBreak(false, 0);
-		// set bacground image
-		$img_file = $front_image;
-		$this->Image($img_file, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
-		// restore auto-page-break status
-		$this->SetAutoPageBreak($auto_page_break, $bMargin);
-		// set the starting point for the page content
-		$this->setPageMark();
-
-		$this->setAlpha(0.85);		
-		$this->Rect(160, 200, 57, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
-		$this->Rect(160, 265, 57, 60, 'F', '', $this->convertHTMLColorToDec('#FFFFFF'));			
-		$this->setAlpha(1);
-		$this->Image(NORI_LOGO, 170, 210, 40, 0);
+		$this->AddPage();		
+		$bMargin = $this->getBreakMargin();				
+		//Portada es una pura imagen
+		$this->Image($front_image, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
 		
-		$this->SetFont('bebasn', '', 18, NORI_GENFONTS . $pt_sans , false);
-		$this->Text(162,268, "RELATOS CRÍTICOS DE ARTE");
-		$this->SetLineWidth(2);
-		$this->Line(163, 280, 215, 280);			
-		$this->setFontSize(12);
-		$this->Text(162,282, "PUBLICACIÓN DEDICADA A LA ESCRITURA");
-		$this->setFontSize(10);
-		$this->Text(162,287, "ACERCA DEL ARTE CONTEMPORÁNEO DESDE CHILE");
+	}
 
+	public function makePreIndex($index_image) {
+		$auto_page_break = $this->getAutoPageBreak();		
+		$this->SetAutoPageBreak(false, 0);		
+		$this->AddPage();		
+		$bMargin = $this->getBreakMargin();				
+		//Portada es una pura imagen
+		$this->Image($index_image, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
 	}   
 
  //Page header
@@ -446,8 +435,7 @@ class noriPDF extends TCPDF {
     	$numimages = count($content->contentimages);
 
     	if($numimages >= 1):
-    		$layout = 'images_layout';
-    		$this->frontpage_image = $content->mainimage['src'];    		    		
+    		$layout = 'images_layout';    		
     	else:
 	    	$layout = 'standard_layout';
 	    endif;
@@ -471,12 +459,12 @@ class noriPDF extends TCPDF {
 
 			if($layout == 'standard_layout'):
 
-				$this->setEqualColumns(3, 60);	
+				$this->setEqualColumns(3, 68);	
 				$cellheight = 0;
 				$cellwidth = 0;
 
 			elseif($layout == 'images_layout'):
-				$this->setEqualColumns(3, 60);
+				$this->setEqualColumns(3, 68);
 				$first_image = $content->contentimages[0];
 				$cellheight = 0;
 				$cellwidth = 0;						
@@ -537,7 +525,7 @@ public function renderMainContent($content, $cellwidth){
 
 }
 
-function nori_makePdf($postobj) {	
+function nori_makePdf($postobj, $forprint = false) {	
 
 	$artids = explode(',', $postobj);
 	
@@ -583,6 +571,7 @@ function nori_makePdf($postobj) {
 	//set some language-dependent strings
 	$pdf->setLanguageArray($l);
 
+	
 	// ---------------------------------------------------------
 
 
@@ -600,14 +589,27 @@ function nori_makePdf($postobj) {
 		$pdf->setPrintFooter(false);
 		$pdf->makeFrontpage($pdf->frontpage_image);
 		$curpage = $pdf->pageNo();
-		$pdf->movePage($curpage, 1);
+		$pdf->movePage($curpage, 1);		
 	endif;
 
-	// Indice	
+	//Make preindex and put it in second page
+	if($pdf->index_image):
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
+		$pdf->makePreIndex($pdf->index_image);
+		$curpage = $pdf->pageNo();
+		$pdf->movePage($curpage, 2);
+	endif;
+
+
+	// Indice		
 	$pdf->addTOCPage();
+	$pdf->SetAutoPageBreak(false, 0);
 	$pdf->setFontSize(11);				
-	$pdf->addTOC(2,'courier', '.', 'Indice', '', array(128,0,0));	
+	$pdf->addTOC(3,'courier', '.', 'Indice', '', array(128,0,0));	
 	$pdf->endTOCPage();
+
+	//Sort pages for printing (need a nice way of combine pages)
 
 	// ---------------------------------------------------------
 
