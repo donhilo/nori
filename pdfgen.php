@@ -525,7 +525,7 @@ public function renderMainContent($content, $cellwidth){
 
 }
 
-function nori_makePdf($postobj, $forprint = false) {	
+function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {	
 
 	$artids = explode(',', $postobj);
 	
@@ -617,10 +617,21 @@ function nori_makePdf($postobj, $forprint = false) {
 	// This method has several options, check the source code documentation for more information.
 	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
 	
-	echo '<div class="alert alert-success alert-block made-pdf">';
-	echo '<h3>El archivo está listo para descargar</h3>';
-	echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt"></i> Descargar</a></p>';	
-	echo '</div>';
+
+	if($forprint == true):
+		echo '<div class="alert alert-success alert-block made-pdf">';
+		echo '<h3>Información y datos enviados por mail.</h3>';
+		
+			$pdflink = NORI_FILESURL . 'articulo-'.$fileid.'.pdf';		
+			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE);						
+
+		echo '</div>';
+	else:		
+		echo '<div class="alert alert-success alert-block made-pdf">';
+		echo '<h3>El archivo está listo para descargar</h3>';				
+		echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt"></i> Descargar</a></p>';	
+		echo '</div>';
+	endif;
 	
 	//============================================================+
 	// END OF FILE

@@ -46,6 +46,7 @@ define( 'TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
 define( 'TCPDF_PATH', NORI_LIBS . 'tcpdf/');
 define( 'NORI_FONTS', NORI_PATH . 'fonts/');
 define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
+define( 'NORI_PRINTER_DUDE', 'jorge@apie.cl, pablo@apie.cl');
 
 //Development constant to enable only registered users to use the app.
 
@@ -74,6 +75,9 @@ require_once( NORI_LIBS . 'tcpdf/tcpdf.php' );
 
 //PDF generation Script
 require_once( NORI_PATH . 'pdfgen.php');
+
+//Mailing and form stuff
+require_once( NORI_PATH . 'forms.php');
 
 //The session stuff
 function nori_StartSession() {
@@ -161,6 +165,7 @@ function nori_selectForm() {
 			if($_GET['norimake'] == 1):				
 
 				printf('<span class="nori-btn btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> Generar PDF</span>');
+				printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> Enviar a imprenta</span>');
 
 			else:
 				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i>Añadir</span>');				
@@ -214,10 +219,17 @@ Ajax Functions
 
 
 function ajaxNori() {	
-	$articles = $_SESSION['articlesel'];
-	if($articles):		
-		nori_makePdf($articles);
-		exit();
+	$articles = $_SESSION['articlesel'];		
+
+	if($articles):
+		if($_POST['forprint'] == 'yes'):
+			$extradata = $_POST['extradata'];			
+			nori_makePdf($articles, true, $extradata);						
+			exit();
+		else:		
+			nori_makePdf($articles);
+			exit();
+		endif;		
 	endif;
 }
 
@@ -299,12 +311,12 @@ function noristylesandscripts() {
 		wp_enqueue_style('noricss');
 
 		wp_register_script('jquery-ui', NORI_URL . '/js/jquery-ui-1.9.2.custom.min.js', 'jquery');
-		wp_enqueue_script('jquery-ui');
+		wp_enqueue_script('jquery-ui');		
 
-		wp_register_script('jquery-cookie', NORI_URL . '/js/jquery.cookie.js', 'jquery');
-		wp_enqueue_script('jquery-cookie');
+		wp_register_script('jquery-form', NORI_URL . '/js/jquery.form.js', 'jquery');
+		wp_enqueue_script('jquery-form');
 
-		wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery-ui', 'jquery-cookie'));
+		wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery-ui', 'jquery-form'));
 		wp_enqueue_script('norijs');
 
 		wp_register_script('bootstrap', NORI_URL . '/js/bootstrap.min.js', 'jquery');
