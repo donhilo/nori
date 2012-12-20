@@ -521,6 +521,22 @@ public function renderMainContent($content, $cellwidth){
 		endforeach;	
 }
 
+public function nori_makePrintableBooklet() {
+	//Get number of pages
+	$numpages = $this->getNumPages();
+	$modnumpages = $numpages % 4;	
+	echo 'Resto:' . $modnumpages;
+	echo '<br/>Total:' . $numpages;
+	if($numpages % 4 != 0):
+		$remains = ($numpages + 4) - ($numpages % 4);
+	endif;
+	echo '<br/>Número para cuadernillo:' . $remains;
+	$this->setPage($numpages);
+	while($numpages <= $remains):
+		$this->addPage();
+	endwhile;
+}
+
  
 
 }
@@ -610,20 +626,24 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 	$pdf->endTOCPage();
 
 	//Sort pages for printing (need a nice way of combine pages)
+	if($forprint == true):
+		$pdf->nori_makePrintableBooklet();
+	endif;
 
 	// ---------------------------------------------------------
 
 	// Close and output PDF document
 	// This method has several options, check the source code documentation for more information.
+	$numpages = $pdf->getNumPages();
+
 	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
 	
 
 	if($forprint == true):
 		echo '<div class="alert alert-success alert-block made-pdf">';
 		echo '<h3>Información y datos enviados por mail.</h3>';
-		
-			$pdflink = NORI_FILESURL . 'articulo-'.$fileid.'.pdf';		
-			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE);						
+			$pdflink = NORI_FILESURL . 'articulo-'.$fileid.'.pdf';					
+			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);						
 
 		echo '</div>';
 	else:		

@@ -46,7 +46,8 @@ define( 'TCPDF_URL', plugin_dir_url(__FILE__) . '/tcpdf');
 define( 'TCPDF_PATH', NORI_LIBS . 'tcpdf/');
 define( 'NORI_FONTS', NORI_PATH . 'fonts/');
 define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
-define( 'NORI_PRINTER_DUDE', 'jorge@apie.cl, pablo@apie.cl');
+define( 'NORI_PRINTER_DUDE', 'pablo@apie.cl');
+define( 'NORI_COSTPERPAGE', 400);
 
 //Development constant to enable only registered users to use the app.
 

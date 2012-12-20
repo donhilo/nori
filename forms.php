@@ -1,10 +1,10 @@
 <?php
 
-function sendPDFforPrint($postvars, $link, $printer) {	
+function sendPDFforPrint($postvars, $link, $printer, $numpages) {	
 
 	$subjectto = 'Gracias por solicitar una impresión desde '. get_bloginfo('name');
 	$mailcontent = '<p>Sus datos fueron enviados exitosamente</p>';
-	$mailcontent .= '<p>Recibirá un correo confirmando el envío:</p>';	
+	$mailcontent .= '<p>Grrracias</p>';	
 
 	$subjectsale = 'Confirmación de solicitud de impresión en ' . get_bloginfo('name');
 	$salecontent = '<h3>Confirmación de Orden</h3>';
@@ -17,6 +17,8 @@ function sendPDFforPrint($postvars, $link, $printer) {
 	$salecontent .= '</ul>';
 	$salecontent .= '<p>El archivo está disponible para descargar en esta URL:</p>';
 	$salecontent .= '<p><a href="' . $link . '">Enlace de descarga</a></p>';
+	$salecontent .= '<p><strong>Número de páginas: </strong> ' . $numpages . ' </p>';
+	$salecontent .= '<p><strong>Costo de impresión: </strong> $CLP' . $numpages * NORI_COSTPERPAGE . '</p>';
 
 	$client = $postvars['clientemail'];
 
