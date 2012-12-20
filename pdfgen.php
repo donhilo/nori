@@ -626,9 +626,9 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 	$pdf->endTOCPage();
 
 	//Sort pages for printing (need a nice way of combine pages)
-	if($forprint == true):
-		$pdf->nori_makePrintableBooklet();
-	endif;
+	// if($forprint == true):
+	// 	$pdf->nori_makePrintableBooklet();
+	// endif;
 
 	// ---------------------------------------------------------
 
