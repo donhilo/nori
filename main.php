@@ -31,7 +31,11 @@ Main resources for PDF selection
 TODO:
 1. Refine session storage method and make it more bulletproof
 2. Make an article storage system vía URL parameters so's you can get an URL vía email with your stored selection
+<<<<<<< HEAD
 
+=======
+4. Add and remove the articles via AJAXXX
+>>>>>>> a7e0b4e743d0e529abc37fd38fa4d86b96518297
 
 
 */
@@ -150,7 +154,6 @@ function nori_centralOps() {
 		else:
 			echo '<ul class="nori_articlelist" data process="compiling">';		
 		endif;
-
 		echo '</ul>';
 
 		//Show Form for adding articles
@@ -222,7 +225,6 @@ Ajax Functions
 */
 //Make the pdf
 
-
 function ajaxNori() {	
 	$articles = $_SESSION['articlesel'];		
 
@@ -241,6 +243,7 @@ function ajaxNori() {
 add_action('wp_ajax_ajaxNori', 'ajaxNori');
 add_action('wp_ajax_nopriv_ajaxNori', 'ajaxNori');
 
+
 //Single item layout
 function articleUnit($id, $checkout = false) {
 	if($checkout == true):
@@ -249,6 +252,7 @@ function articleUnit($id, $checkout = false) {
 		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
 	endif;
 }
+
 
 function ajaxSessionNori() {
 	global $post;
@@ -270,6 +274,7 @@ function ajaxSessionNori() {
 			elseif($posts != $id):
 					nori_addPost($id);
 					articleUnit($id, false);
+
 			endif;
 			exit();
 		break;
@@ -288,6 +293,7 @@ function ajaxSessionNori() {
 
 		case('populate'):
 			if(isset($_SESSION['articlesel'])):
+
 				$posts = explode(',', $_SESSION['articlesel']);				
 					foreach($posts as $id):
 						articleUnit($id, false);
@@ -307,6 +313,7 @@ function ajaxSessionNori() {
 		break;
 		
 		case('update'):
+
 			if(isset($_POST['orderdata'])):					
 				nori_SessionSet('articlesel', $_POST['orderdata']);				
 			endif;

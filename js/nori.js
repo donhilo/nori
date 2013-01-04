@@ -1,15 +1,18 @@
 jQuery(document).ready(function($) {	
+
 	var resultbox = $('.nori_wrapper');
 
 	$('#nori_printform').hide();	
 
 	$('#nori_make_renderbox .nori_articlelist').sortable({
+
 		update: function(event, ui){
 			var articlesel = new Array();
 			
 			$('.nori_articlelist li').each(function() {				
 				articlesel.push($(this).data('id'));
 			});			
+
 
 			var artjoin = articlesel.join()
 			console.log(artjoin);
@@ -27,8 +30,8 @@ jQuery(document).ready(function($) {
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					$('.formwrapper').append('<p>Error</p>');
 				}
-			});
-			
+			});			
+
 			}
 	});
 
@@ -36,6 +39,7 @@ jQuery(document).ready(function($) {
 
 	//Llenar articulos
 	(function() {
+
 		var articlelist = $('.nori_articlelist');
 		articlelist.append('<p>Cargando datos</p>');
 		if(articlelist.data('process') == 'incheckout') {
@@ -124,6 +128,7 @@ jQuery(document).ready(function($) {
 					extradata: formData
 				},
 				success: function(data, textStatus, XMLHttpRequest) {
+
 					resultbox.empty().hide()
 					.append(data)
 					.fadeIn()
@@ -140,6 +145,7 @@ jQuery(document).ready(function($) {
 
 	$('#generar-ajax').on('click', function() {
 		articles = $(this).data('articles');
+
 		resultbox
 			.empty()
 			.hide()
@@ -210,10 +216,9 @@ jQuery(document).ready(function($) {
 		});
 	});
 //Different calls cause I call this stuff via AJAX
-	$(document).on('click', '.articledel', function() {
-		
-		parentli = $(this).parent('li');				
+	$(document).on('click', '.articledel', function() {	
 
+		parentli = $(this).parent('li');				
 		$.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
@@ -222,10 +227,10 @@ jQuery(document).ready(function($) {
 				command: 'delete', 
 				id: parentli.data('id')
 			},
+
 			success: function(data, textStatus, XMLHttpRequest) {								
 				parentli.remove();
 				console.log(parentli.data('id'));
-
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
 				$('.nori_articlelist').prepend('<li>ERROR</li>');	

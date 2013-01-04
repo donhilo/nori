@@ -314,9 +314,11 @@ class noriPDF extends TCPDF {
 		$this->setColor('text', 0, 0, 0, 100);
 	}
 
+
 	public function setWhiteColorText() {
 		$this->setColor('text', 0, 0, 0, 0);
 	}
+
 
 	public function setPageBackground($bgcolor) {
 
@@ -333,12 +335,14 @@ class noriPDF extends TCPDF {
 		
 		$this->setCellHeightRatio(0.9);				
 
+
 		$this->setTextColorArray($this->convertHTMLColorToDec($this->maincolor));
 
 		$this->MultiCell(210,20,$parsed_title, 0, 'L', false, 1, 16, $this->GetY(), true, 1, false, true, 0, 'T', true);
 		
 		$this->Ln(4);
 	}
+
 
 	public function mainImage($article_layout, $mainimage) {
 				$relation = $mainimage['relation'];
@@ -547,6 +551,7 @@ public function nori_makePrintableBooklet() {
 
 }
 
+
 function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {	
 
 	$artids = explode(',', $postobj);
@@ -632,9 +637,11 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 	$pdf->endTOCPage();
 
 	//Sort pages for printing (need a nice way of combine pages)
+
 	if($forprint == true):
 	 	$pdf->nori_makePrintableBooklet();
 	endif;
+
 
 	// ---------------------------------------------------------
 
