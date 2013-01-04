@@ -3,7 +3,7 @@
 Plugin Name: Nori
 Plugin URI: http://www.apie.cl
 Description: PDF Generation for Wordpress using Tcpdf library.
-Version: 0.5alpha
+Version: 0.6alpha
 Author: Pablo Selín Carrasco Armijo
 Author URI: http://www.apie.cl
 License: GPL2
