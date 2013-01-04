@@ -79,32 +79,32 @@
 	/**
 	 * header margin
 	 */
-	define ('PDF_MARGIN_HEADER', 5);
+	define ('PDF_MARGIN_HEADER', 10);
 
 	/**
 	 * footer margin
 	 */
-	define ('PDF_MARGIN_FOOTER', 10);
+	define ('PDF_MARGIN_FOOTER', 15);
 
 	/**
 	 * top margin
 	 */
-	define ('PDF_MARGIN_TOP', 27);
+	define ('PDF_MARGIN_TOP', 15);
 
 	/**
 	 * bottom margin
 	 */
-	define ('PDF_MARGIN_BOTTOM', 25);
+	define ('PDF_MARGIN_BOTTOM', 15);
 
 	/**
 	 * left margin
 	 */
-	define ('PDF_MARGIN_LEFT', 15);
+	define ('PDF_MARGIN_LEFT', 20);
 
 	/**
 	 * right margin
 	 */
-	define ('PDF_MARGIN_RIGHT', 15);
+	define ('PDF_MARGIN_RIGHT', 20);
 
 	/**
 	 * default main font name
@@ -134,7 +134,10 @@
 	/**
 	 * ratio used to adjust the conversion of pixels to user units
 	 */
+	
 	define ('PDF_IMAGE_SCALE_RATIO', 1.25);
+
+	//define ('PDF_IMAGE_SCALE_RATIO', 1);
 
 	/**
 	 * magnification factor for titles
