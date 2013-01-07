@@ -9,7 +9,8 @@ ul.nori_articlelist li {
 	padding:4px 6px;
 	background-color:#f0f0f0;
 	cursor:pointer;
-								}
+}
+
 div.nori_wrapper {
 		padding:6px;
 		border:1px dotted #ccc;
@@ -29,8 +30,42 @@ div.nori_wrapper {
 	cursor:pointer;
 }
 
+.nori_wrapper p {
+  margin-bottom:12px;
+}
+
 #nori_make_renderbox {
 	max-width:600px;
+  margin-top:48px;
+  padding:12px;
+  border:1px dotted #ccc;
+}
+
+#nori_make_renderbox .nori_wrapper {
+  margin:24px 0;
+  border:0;
+  background-color:#ccc;
+  padding:24px;
+}
+
+#nori_make_renderbox p.updatedorder {
+  margin:6px;
+  color:#C44701;
+}
+
+#nori_make_renderbox p {
+  margin-bottom:12px;
+  font-size:16px;
+}
+
+#nori_make_renderbox ul.nori_articlelist li {
+  font-size:16px;
+}
+
+#nori_make_renderbox .legend p{
+  font-size:14px;
+  font-style:italic;
+  color:#555;
 }
 
 .made-pdf h3 {

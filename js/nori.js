@@ -1,6 +1,7 @@
 jQuery(document).ready(function($) {	
 
 	var resultbox = $('.nori_wrapper');
+	var uistuff = $('.introstuff, .legend');
 
 	$('#nori_printform').hide();	
 
@@ -25,10 +26,11 @@ jQuery(document).ready(function($) {
 					orderdata: artjoin
 				},
 				success: function(data, textStatus, XMLHttpRequest) {
-					$('.formwrapper').append('<p>Orden actualizado: ' + artjoin + '</p>');					
+					$('.formwrapper').append('<p class="updatedorder">'+ noriAJAX.msg_updatedorder + '</p>');
+					$('p.updatedorder').fadeOut(500);					
 				}, 
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
-					$('.formwrapper').append('<p>Error</p>');
+					$('.formwrapper').append('<p>' + noriAJAX.msg_error +'</p>');
 				}
 			});			
 
@@ -41,7 +43,7 @@ jQuery(document).ready(function($) {
 	(function() {
 
 		var articlelist = $('.nori_articlelist');
-		articlelist.append('<p>Cargando datos</p>');
+		articlelist.append('<p>' + noriAJAX.msg_loadingselection +'</p>');
 		if(articlelist.data('process') == 'incheckout') {
 			var popcommand = 'populateandsort';
 		} else {
@@ -59,12 +61,13 @@ jQuery(document).ready(function($) {
 				$('.nori_articlelist').empty().append(data);
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				$('.nori_articlelist').empty().append('ERROR:' + errorThrown);	
+				$('.nori_articlelist').empty().append( noriAJAX.msg_error + ':' + errorThrown);	
 			}
 		})
 		})();
 
 	$('#payandprint').on('click', function(e) {
+		uistuff.fadeOut();
 		//Validate Fields
 		$(".error").hide();
     	var hasError = false;
@@ -76,26 +79,26 @@ jQuery(document).ready(function($) {
     	var nameVal = $('#clientname').val();
 
     	if(nameVal == '') {
-    		$('#clientname').after('<span class="error">Por favor, escribe tu nombre.</span>')
+    		$('#clientname').after('<span class="error">' + noriAJAX.msg_noname + '</span>')
     		hasError = true;
     	}	
 
     	if(addressVal == '') {
-    		$('#clientaddress').after('<span class="error">Por favor, escribe tu dirección.</span>')
+    		$('#clientaddress').after('<span class="error">' + noriAJAX.msg_noaddress + '</span>')
     		hasError = true;
     	}
 
     	if(phoneVal == '') {
-    		$('#clientphone').after('<span class="error">Por favor, escribe tu teléfono.</span>')
+    		$('#clientphone').after('<span class="error">' + noriAJAX.msg_nophone + '</span>')
     		hasError = true;
     	}
 
     	if(emailaddressVal == '') {
-      		$("#clientemail").after('<span class="error">Por favor, escribe tu correo.</span>');
+      		$("#clientemail").after('<span class="error"> ' + noriAJAX.msg_nomail + '</span>');
       		hasError = true;
     		} 
     	else if(!emailReg.test(emailaddressVal)) {
-      		$("#clientemail").after('<span class="error">Escribe una dirección de correo válida.</span>');
+      		$("#clientemail").after('<span class="error">' + noriAJAX.msg_novalidmail + '</span>');
       		hasError = true;
     		}
     	
@@ -116,7 +119,7 @@ jQuery(document).ready(function($) {
 			console.log(formData);
 			resultbox			
 				.empty()
-				.append('<div class="alert"><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/>  Generando PDF...</div>')
+				.append('<h3><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/>  ' + noriAJAX.msg_generating + '</h3><p>' + noriAJAX.msg_timeexplanation +'</p>')
 				.fadeIn();
 			$.ajax({
 				type: 'POST',
@@ -127,14 +130,13 @@ jQuery(document).ready(function($) {
 					forprint: 'yes',
 					extradata: formData
 				},
-				success: function(data, textStatus, XMLHttpRequest) {
-
+				success: function(data, textStatus, XMLHttpRequest) {					
 					resultbox.empty().hide()
 					.append(data)
 					.fadeIn()
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
-					resultbox.append('ERRORERRORERROR: ' + errorThrown);
+					resultbox.append( noriAJAX.msg_error +': ' + errorThrown);
 				}
 			});
 
@@ -144,12 +146,13 @@ jQuery(document).ready(function($) {
 	});	
 
 	$('#generar-ajax').on('click', function() {
+		uistuff.fadeOut();
 		articles = $(this).data('articles');
 
 		resultbox
 			.empty()
 			.hide()
-			.append('<div class="alert"><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/>  Generando PDF...</div>')
+			.append('<h3><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/> ' + noriAJAX.msg_generating + '</h3><p>' + noriAJAX.msg_timeexplanation +'</p>')
 			.fadeIn();
 		console.log(articles);
 		$.ajax({
@@ -160,13 +163,13 @@ jQuery(document).ready(function($) {
 				articlelist : articles,
 				forprint: 'no'
 			},
-			success: function(data, textStatus, XMLHttpRequest) {
+			success: function(data, textStatus, XMLHttpRequest) {								
 				resultbox.empty().hide()
 				.append(data)
 				.fadeIn();				
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				resultbox.append('EERRRROR: ' + errorThrown);
+				resultbox.append(noriAJAX.msg_error +': ' + errorThrown);
 			}	
 		});
 	});
@@ -193,7 +196,7 @@ jQuery(document).ready(function($) {
 				$('.nori_articlelist').prepend(item);
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
-				$('.nori_articlelist').prepend('<li>ERROR</li>');	
+				$('.nori_articlelist').prepend('<li>' + noriAJAX.msg_error +'</li>');	
 			}
 		});
 	});
@@ -211,7 +214,7 @@ jQuery(document).ready(function($) {
 				$('#generar-ajax').data('articles', '');
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
-				$('.nori_articlelist').prepend('<li>ERROR</li>');	
+				$('.nori_articlelist').prepend('<li> ' + noriAJAX.msg_error + ' </li>');	
 			}
 		});
 	});
@@ -233,7 +236,7 @@ jQuery(document).ready(function($) {
 				console.log(parentli.data('id'));
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
-				$('.nori_articlelist').prepend('<li>ERROR</li>');	
+				$('.nori_articlelist').prepend('<li> ' + noriAJAX.msg_error + ' </li>');	
 			}
 		});
 	});

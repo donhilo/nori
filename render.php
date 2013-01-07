@@ -1,8 +1,15 @@
 <?php get_header();?>
 
 <div id="nori_make_renderbox">
-<h1>Artículos seleccionados <!--<?php echo $_SESSION['articlesel'];?>--></h1>
 
+<h1> <?php echo NORIMSG_SYSTEMTITLE;?> </h1>
+
+<div class="introstuff">
+<p> <?php echo NORIMSG_RENDERINTRO; ?> </p>
+<p> <?php echo NORIMSG_TIMEWARNING; ?> </p>
+
+<p> <?php echo NORIMSG_LISTTITLE;?> </p>
+</div>
 
 <?php nori_centralOps();?>
 
@@ -41,6 +48,12 @@
 		
 	
 	</form>
+
+</div>
+
+<div class="legend">
+<p> <i class="icon icon-move"></i> <?php echo NORIMSG_REORDERINTRO; ?> </p>
+<p> <i class="icon icon-trash"></i> <?php echo NORIMSG_TRASHINTRO; ?> </p>
 </div>
 
 <div id="nori_result">

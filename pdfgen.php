@@ -289,8 +289,8 @@ class noriPDF extends TCPDF {
 	        $curY = $this->getY();     
 	        $this->Line(160, $curY + 3, 183, $curY + 3);
 	        $this->Cell(0, 0, $this->title . '  |   '.$this->getAliasNumPage() , 0, false, 'R', 0, '', 0, false, 'T', 'M');
-	        endif;
-	    $this->setAllCropMarks();    
+	        endif;	    
+	    	$this->setAllCropMarks();    	    
     }	
 
     //Procesa las imágenes del capítulo
@@ -652,18 +652,13 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
 	
 
-	if($forprint == true):
-		echo '<div class="alert alert-success alert-block made-pdf">';
+	if($forprint == true):		
 		echo '<h3>Información y datos enviados por mail.</h3>';
 			$pdflink = NORI_FILESURL . 'articulo-'.$fileid.'.pdf';					
-			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);						
-
-		echo '</div>';
-	else:		
-		echo '<div class="alert alert-success alert-block made-pdf">';
+			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);								
+	else:				
 		echo '<h3>El archivo está listo para descargar</h3>';				
-		echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt"></i> Descargar</a></p>';	
-		echo '</div>';
+		echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt"></i> Descargar</a></p>';			
 	endif;
 	
 	//============================================================+

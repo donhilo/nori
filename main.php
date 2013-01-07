@@ -31,12 +31,6 @@ Main resources for PDF selection
 TODO:
 1. Refine session storage method and make it more bulletproof
 2. Make an article storage system vía URL parameters so's you can get an URL vía email with your stored selection
-<<<<<<< HEAD
-
-=======
-4. Add and remove the articles via AJAXXX
->>>>>>> a7e0b4e743d0e529abc37fd38fa4d86b96518297
-
 
 */
 
@@ -56,8 +50,40 @@ define( 'NORI_MAXPAGES', 80);
 
 //Development constant to enable only registered users to use the app.
 
-define( 'NORI_DEV', true);
+define('NORI_DEV', true);
 define('NORI_LOGO', NORI_PATH . 'logo/ayc_logo.png');
+
+//Text chains
+
+define('NORIMSG_GENERATE', 'Generar PDF' );
+define('NORIMSG_SENDTOPRINT', 'Enviar a imprenta');
+define('NORIMSG_ADDARTICLE', 'Añadir');
+define('NORIMSG_COMPOSE', 'Componer libro');
+define('NORIMSG_DELETESELECTION', 'Borrar selección');
+define('NORIMSG_SYSTEMTITLE', 'Sistema de autoedición');
+define('NORIMSG_SHORTINTRO', 'Puedes seleccionar este artículo e incluirlo en tu propia edición en formato PDF.');
+define('NORIMSG_LISTTITLE', 'Has seleccionado los siguientes artículos:');
+define('NORIMSG_NOARTICLES', 'No hay ningún artículo seleccionado');
+define('NORIMSG_RENDERINTRO', 'En esta página puedes generar una edición en formato PDF a partir de los artículos que has seleccionado.');
+define('NORIMSG_REORDERINTRO', 'También puedes reordenar los artículos arrastrándolos y cambiando su posición en la lista.');
+define('NORIMSG_TIMEWARNING', 'Ten en cuenta que a mayor cantidad de artículos, mayor es el tiempo que demorará la generación de la edición.');
+define('NORIMSG_TRASHINTRO', 'Puedes borrar artículos de la lista haciendo clic en el basurero.');
+
+//js text chains
+
+define('NORIMSG_LOADINGSELECTION', 'Cargando selección...');
+define('NORIMSG_GENERATING', 'Generando libro electrónico ...');
+define('NORIMSG_TIMEEXPLANATION', 'La creación del archivo pdf puede tomar un tiempo dependiendo de la cantidad de artículos e imágenes. Por favor, no cierres esta página.');
+define('NORIMSG_UPDATEDORDER', 'Orden actualizado!');
+define('NORIMSG_ERROR', 'Error general');
+define('NORIMSG_NONAME', 'Falta que pongas tu nombre');
+define('NORIMSG_NOMAIL', 'Falta que pongas tu e-mail');
+define('NORIMSG_NOADDRESS', 'Falta que pongas tu dirección de envío');
+define('NORIMSG_NOPHONE', 'Falta que pongas tu teléfono');
+define('NORIMSG_NOVALIDMAIL', 'Escribe una dirección de correo válida');
+
+
+
 
 //TCPDF Config
 
@@ -152,6 +178,12 @@ function nori_centralOps() {
 		if($_GET['norimake'] == 1):
 			echo '<ul class="nori_articlelist" data-process="incheckout">';		
 		else:
+			echo '<h4>' . NORIMSG_SYSTEMTITLE . '</h4>';
+			if(isset($_SESSION['articlesel'])):
+				echo '<p>' . NORIMSG_LISTTITLE . '</p>';
+			else:
+				echo '<p>' . NORIMSG_SHORTINTRO . '</p>';
+			endif;
 			echo '<ul class="nori_articlelist" data process="compiling">';		
 		endif;
 		echo '</ul>';
@@ -172,16 +204,16 @@ function nori_selectForm() {
 					
 			if($_GET['norimake'] == 1):				
 
-				printf('<span class="nori-btn btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> Generar PDF</span>');
-				printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> Enviar a imprenta</span>');
+				printf('<span class="nori-btn btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> ' . NORIMSG_GENERATE . '</span>');
+				printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> ' . NORIMSG_SENDTOPRINT . '</span>');
 
 			else:
-				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i>Añadir</span>');				
-				printf('<a class="nori-btn btn" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-cog"></i> Componer libro </a>');
+				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+				printf('<a class="nori-btn btn" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
 			
 			endif;
 
-			printf('<span class="nori-btn btn btn-inverse" id="borrar-articulos" name="delete-all"><i class="icon-white icon-trash"></i> Borrar todos los artículos</span>');
+			printf('<span class="nori-btn btn btn-inverse" id="borrar-articulos" name="delete-all"><i class="icon-white icon-trash"></i> ' . NORIMSG_DELETESELECTION .'</span>');
 		printf('<br/></div>');			
 				
 	}
@@ -356,7 +388,17 @@ function noristylesandscripts() {
 
 		wp_localize_script('norijs', 'noriAJAX', array(
 		 	'ajaxurl' => admin_url( 'admin-ajax.php' ),
-		 	'noriurl' => NORI_URL
+		 	'noriurl' => NORI_URL,
+		 	'msg_generating' => NORIMSG_GENERATING,
+		 	'msg_error' => NORIMSG_ERROR,
+		 	'msg_updatedorder' => NORIMSG_UPDATEDORDER,
+		 	'msg_nophone' => NORIMSG_NOPHONE,
+		 	'msg_noaddress' => NORIMSG_NOADDRESS,
+		 	'msg_nomail' => NORIMSG_NOMAIL,
+		 	'msg_noname' => NORIMSG_NONAME,
+		 	'msg_loadingselection' => NORIMSG_LOADINGSELECTION,
+		 	'msg_novalidmail' => NORIMSG_NOVALIDMAIL,
+		 	'msg_timeexplanation' => NORIMSG_TIMEEXPLANATION
 		 	));
 	//endif;
 	
