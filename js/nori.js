@@ -1,5 +1,22 @@
-jQuery(document).ready(function($) {	
+function populate(action, element) {
+	jQuery.ajax({
+			type: 'POST',
+			url: noriAJAX.ajaxurl,
+			data: {
+				action: 'ajaxSessionNori',
+				command: action
+			},
+			success: function(data, textStatus, XMLHttpRequest) {
+				jQuery(element).empty().append(data);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				jQuery(element).empty().append( noriAJAX.msg_error + ':' + errorThrown);	
+			}
+		});
+}
 
+jQuery(document).ready(function($) {	
+	var articlecount = $('.countcont');
 	var resultbox = $('.nori_wrapper');
 	var uistuff = $('.introstuff, .legend');
 
@@ -32,17 +49,17 @@ jQuery(document).ready(function($) {
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					$('.formwrapper').append('<p>' + noriAJAX.msg_error +'</p>');
 				}
-			});			
+			});
 
 			}
 	});
 
 
 
-	//Llenar articulos
+	//Llenar articulos y contador de artículos
 	(function() {
 
-		var articlelist = $('.nori_articlelist');
+		var articlelist = $('.nori_articlelist');		
 		articlelist.append('<p>' + noriAJAX.msg_loadingselection +'</p>');
 		if(articlelist.data('process') == 'incheckout') {
 			var popcommand = 'populateandsort';
@@ -50,21 +67,24 @@ jQuery(document).ready(function($) {
 			var popcommand = 'populate';
 		}
 
+		populate(popcommand, '#nori_make_renderbox .nori_articlelist');
+
 		$.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
 			data: {
 				action: 'ajaxSessionNori',
-				command: popcommand
+				command: 'count'
 			},
 			success: function(data, textStatus, XMLHttpRequest) {
-				$('.nori_articlelist').empty().append(data);
+				articlecount.empty().append(data);
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				$('.nori_articlelist').empty().append( noriAJAX.msg_error + ':' + errorThrown);	
+				articlecount.empty().append(errorThrown);	
 			}
-		})
-		})();
+		});
+	})();
+		
 
 	$('#payandprint').on('click', function(e) {
 		uistuff.fadeOut();
@@ -115,8 +135,7 @@ jQuery(document).ready(function($) {
 			formInputs.each(function(index) {
 				var prop = $(this).attr('name');
 				formData[prop] = $(this).attr('value');
-			});
-			console.log(formData);
+			});			
 			resultbox			
 				.empty()
 				.append('<h3><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/>  ' + noriAJAX.msg_generating + '</h3><p>' + noriAJAX.msg_timeexplanation +'</p>')
@@ -153,8 +172,7 @@ jQuery(document).ready(function($) {
 			.empty()
 			.hide()
 			.append('<h3><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/> ' + noriAJAX.msg_generating + '</h3><p>' + noriAJAX.msg_timeexplanation +'</p>')
-			.fadeIn();
-		console.log(articles);
+			.fadeIn();		
 		$.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
@@ -194,6 +212,20 @@ jQuery(document).ready(function($) {
 			success: function(data, textStatus, XMLHttpRequest) {
 				var item = $(data).hide().fadeIn(1400)
 				$('.nori_articlelist').prepend(item);
+				$.ajax({
+					type: 'POST',
+					url: noriAJAX.ajaxurl,
+				data: {
+					action: 'ajaxSessionNori',
+					command: 'count'
+					},
+					success: function(data, textStatus, XMLHttpRequest) {
+					articlecount.empty().append(data);
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+					articlecount.empty().append(errorThrown);	
+					}
+				});				
 			},
 			error: function(data, textStatus, XMLHttpRequest) {
 				$('.nori_articlelist').prepend('<li>' + noriAJAX.msg_error +'</li>');	
@@ -241,4 +273,22 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	$('.countcont').popover({
+		title: 'Artículos seleccionados',
+		placement: 'bottom',
+		content: '<ul class="nori_articlelist"> Cargando artículos ... </ul>',
+		html: true		
+		});
+
+	$('body').delegate('.countcont', 'hover', 
+		function(event) {
+			if(event.type == 'mouseenter'){
+				var e = $(this);
+				e.unbind('mouseenter');
+				e.popover('show');
+				populate('onlypopulate', '.nori_snippet .nori_articlelist');
+			} else {
+				$(this).popover('hide');
+			}
+		});	
 });

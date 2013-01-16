@@ -1,6 +1,6 @@
 <?php get_header();?>
 
-<div id="nori_make_renderbox">
+<div id="nori_make_renderbox" class="nori-css">
 
 <h1> <?php echo NORIMSG_SYSTEMTITLE;?> </h1>
 
@@ -8,7 +8,14 @@
 <p> <?php echo NORIMSG_RENDERINTRO; ?> </p>
 <p> <?php echo NORIMSG_TIMEWARNING; ?> </p>
 
+<!--<p id="generar-url"> <?php echo NORIMSG_STOREINTRO;?>: <span class="btn nori-btn btn-mini storesel">Guardar selección</span></p>-->
+
 <p> <?php echo NORIMSG_LISTTITLE;?> </p>
+
+
+
+
+
 </div>
 
 <?php nori_centralOps();?>

@@ -58,7 +58,7 @@ class noriContent {
 		
 		$this->author = $autstring;
 
-		$this->date = mysql2date('M Y', $article->post_date, true);
+		$this->date = mysql2date('F Y', $article->post_date, true);
 
 		//First image is featured image, the others are the others images attached to the post.	
 
@@ -218,6 +218,7 @@ class noriPDF extends TCPDF {
     	
     	$this->frontpage_image = NORI_URL . 'examples/portada_test.jpg';
     	$this->index_image = NORI_URL . 'examples/creditos_test.jpg';
+    	$this->indexbg_image = NORI_URL . 'examples/indice_test.jpg';
 
     	$pagesize = array($this->pagesize[0], $this->pagesize[1]);
 
@@ -632,8 +633,15 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 	// Indice		
 	$pdf->addTOCPage();
 	$pdf->SetAutoPageBreak(false, 0);
-	$pdf->setFontSize(11);				
-	$pdf->addTOC(3,'courier', '.', 'Indice', '', array(128,0,0));	
+	//Poner la imagen de fondo
+	$pdf->Image($pdf->indexbg_image, 0, 0, $pdf->pagesize[0], $pdf->pagesize[1], '', '', '', false, 300, '', false, false, 0);
+	$pdf->SetTopMargin(124);
+	$pdf->SetLeftMargin(30);
+	$pdf->SetRightMargin(30);
+	$pdf->SetFont($opensanslight, '', 12, NORI_GENFONTS . $opensanslight, false);
+	$pdf->setFontSize(12);
+	$pdf->setBlackColorText();				
+	$pdf->addTOC(3,'', '.', 'Indice', '', array(1,1,1));	
 	$pdf->endTOCPage();
 
 	//Sort pages for printing (need a nice way of combine pages)
