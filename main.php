@@ -187,18 +187,21 @@ function nori_articleCount(){
 function nori_snippet() {
 	global $post;
 	echo '<div class="nori-css nori_snippet">';		
+	echo '<span class="label norititle">Crea tu edición en PDF</span>';
 	echo '<span class="noricounter btn btn-mini btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
 	if(is_single()):
-		printf('<span title="' . NORIMSG_ADDARTICLE . '" class="btn btn-mini btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+		printf('<span title="Añadir artículo a tu selección" class="btn btn-mini btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
 	else:
-		printf('<span title="' . NORIMSG_ADDARTICLE . '" class="btn btn-mini btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
+		printf('<span title="No puedes añadir nada aquí" class="btn btn-mini btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
 	endif;
 
 	if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
-		printf('<a class="nori-btn btn btn-mini btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+		printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
 	else:
-		printf('<a class="nori-btn btn btn-mini btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+		printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
 	endif;
+
+	//echo '<span class="info"></span>'
 	echo '</div>';
 }
 

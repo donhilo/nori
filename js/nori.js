@@ -285,6 +285,23 @@ jQuery(document).ready(function($) {
 		html: true		
 		});
 
+	//Tooltips
+
+	$('.noricounter').tooltip({
+		placement: 'bottom',
+		title: 'N° de artículos seleccionados.'
+	});
+
+	$('#add-article').tooltip({
+		placement: 'bottom',
+		title: 'Añadir este artículo a tu selección.'
+	});
+
+	$('.norimake-btn').tooltip({
+		placement: 'bottom',
+		title: 'Crear un compilado en PDF a partir de tu selección.'
+	});
+
 	$('body').click(function() {
 		$('.noricounter').popover('hide');
 	});	

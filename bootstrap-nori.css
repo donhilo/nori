@@ -5220,8 +5220,8 @@ textarea.span1,
 }
 
 .nori-css .tooltip.in {
-  opacity: 0.8;
-  filter: alpha(opacity=80);
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
 
 .nori-css .tooltip.top {
@@ -5243,10 +5243,10 @@ textarea.span1,
 .nori-css .tooltip-inner {
   max-width: 200px;
   padding: 3px 8px;
-  color: #ffffff;
+  color: #333333;
   text-align: center;
   text-decoration: none;
-  background-color: #000000;
+  background-color: #ffffff;
   -webkit-border-radius: 1px;
      -moz-border-radius: 1px;
           border-radius: 1px;
@@ -5264,7 +5264,7 @@ textarea.span1,
   bottom: 0;
   left: 50%;
   margin-left: -5px;
-  border-top-color: #000000;
+  border-top-color: #ffffff;
   border-width: 5px 5px 0;
 }
 
@@ -5272,7 +5272,7 @@ textarea.span1,
   top: 50%;
   left: 0;
   margin-top: -5px;
-  border-right-color: #000000;
+  border-right-color: #ffffff;
   border-width: 5px 5px 5px 0;
 }
 
@@ -5280,7 +5280,7 @@ textarea.span1,
   top: 50%;
   right: 0;
   margin-top: -5px;
-  border-left-color: #000000;
+  border-left-color: #ffffff;
   border-width: 5px 0 5px 5px;
 }
 
@@ -5288,7 +5288,7 @@ textarea.span1,
   top: 0;
   left: 50%;
   margin-left: -5px;
-  border-bottom-color: #000000;
+  border-bottom-color: #ffffff;
   border-width: 0 5px 5px;
 }
 
