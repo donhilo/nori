@@ -77,7 +77,12 @@ jQuery(document).ready(function($) {
 				command: 'count'
 			},
 			success: function(data, textStatus, XMLHttpRequest) {
-				articlecount.empty().append(data);
+				if(data.length > 0){
+					articlecount.empty().append(data);
+				} else {
+					articlecount.empty().append('0');
+				}
+
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				articlecount.empty().append(errorThrown);	

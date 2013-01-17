@@ -116,6 +116,7 @@ require_once( NORI_PATH . 'forms.php');
 //The session stuff
 function nori_StartSession() {
     if(!session_id()) {
+    	session_set_cookie_params(86400, '/', get_bloginfo('url'));
         session_start();
     }
 }
@@ -202,8 +203,7 @@ function nori_snippet() {
 }
 
 //Nori central functions for selecting articles, adding pdfs, etc.
-function nori_centralOps() {
-	if(is_user_logged_in()):		
+function nori_centralOps() {			
 		echo '<div class="nori_wrapper nori-css well">';
 		
 		if($_GET['norimake'] == 1):
@@ -223,8 +223,7 @@ function nori_centralOps() {
 
 		nori_selectForm();
 
-		echo '</div><!--Nori Wrapper-->';
-	endif;
+		echo '</div><!--Nori Wrapper-->';	
 }
 
 
@@ -417,7 +416,7 @@ add_action('wp_ajax_nopriv_ajaxSessionNori', 'ajaxSessionNori');
 
 function noristylesandscripts() {	
 	
-	//if(!is_admin()):
+	if(!is_admin()):
 		wp_register_style('noricss', NORI_URL . '/nori.css');
 		wp_enqueue_style('noricss');
 
@@ -450,7 +449,7 @@ function noristylesandscripts() {
 		 	'msg_novalidmail' => NORIMSG_NOVALIDMAIL,
 		 	'msg_timeexplanation' => NORIMSG_TIMEEXPLANATION
 		 	));
-	//endif;
+	endif;
 	
 }
 

@@ -216,7 +216,16 @@ class noriPDF extends TCPDF {
     	$this->pagesize[0] = 230 + $this->bleed_margin;     	
     	$this->pagesize[1] = 310 + $this->bleed_margin;
     	
-    	$this->frontpage_image = NORI_URL . 'examples/portada_test.jpg';
+    	$frontpages = array(
+    		'frontpages/daniel_reyes_portada.jpg',
+    		'frontpages/javier_rodriguez_portada.jpg',
+    		'frontpages/jorge_gonzalez_portada.jpg',
+    		);
+
+    	$chfront = array_rand($frontpages);
+    	
+    	$this->frontpage_image = NORI_URL . $frontpages[$chfront];
+    	
     	$this->index_image = NORI_URL . 'examples/creditos_test.jpg';
     	$this->indexbg_image = NORI_URL . 'examples/indice_test.jpg';
 
