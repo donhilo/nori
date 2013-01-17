@@ -2,6 +2,8 @@
 
 <div id="nori_make_renderbox" class="nori-css">
 
+<div class="hero-unit">
+
 <h1> <?php echo NORIMSG_SYSTEMTITLE;?> </h1>
 
 <div class="introstuff">
@@ -64,6 +66,8 @@
 </div>
 
 <div id="nori_result">
+</div>
+
 </div>
 
 </div>

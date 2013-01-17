@@ -186,7 +186,7 @@ function nori_articleCount(){
 function nori_snippet() {
 	global $post;
 	echo '<div class="nori-css nori_snippet">';		
-	echo '<span class="countcont"></span>';	
+	echo '<span class="noricounter btn btn-mini btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
 	if(is_single()):
 		printf('<span title="' . NORIMSG_ADDARTICLE . '" class="btn btn-mini btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
 	else:
@@ -204,7 +204,7 @@ function nori_snippet() {
 //Nori central functions for selecting articles, adding pdfs, etc.
 function nori_centralOps() {
 	if(is_user_logged_in()):		
-		echo '<div class="nori_wrapper nori-css">';
+		echo '<div class="nori_wrapper nori-css well">';
 		
 		if($_GET['norimake'] == 1):
 			echo '<ul class="nori_articlelist" data-process="incheckout">';		
@@ -377,7 +377,7 @@ function ajaxSessionNori() {
 		break;
 
 		case('count'):									
-			echo '<span class="noricounter"><span class="badge badge-success">' . nori_articleCount() . '</span> artículos seleccionados</span>';						
+			echo nori_articleCount();						
 			exit();
 		break;
 
@@ -420,6 +420,9 @@ function noristylesandscripts() {
 	//if(!is_admin()):
 		wp_register_style('noricss', NORI_URL . '/nori.css');
 		wp_enqueue_style('noricss');
+
+		wp_register_style('bootstrap-nori', NORI_URL . '/bootstrap-nori.css');
+		wp_enqueue_style( 'bootstrap-nori');
 
 		wp_register_script('jquery-ui', NORI_URL . '/js/jquery-ui-1.9.2.custom.min.js', 'jquery');
 		wp_enqueue_script('jquery-ui');		

@@ -666,7 +666,7 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);								
 	else:				
 		echo '<h3>El archivo está listo para descargar</h3>';				
-		echo '<p><a href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt"></i> Descargar</a></p>';			
+		echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> Descargar</a></p>';			
 	endif;
 	
 	//============================================================+

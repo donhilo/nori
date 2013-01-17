@@ -16,7 +16,7 @@ function populate(action, element) {
 }
 
 jQuery(document).ready(function($) {	
-	var articlecount = $('.countcont');
+	var articlecount = $('.noricounter .nori_number');
 	var resultbox = $('.nori_wrapper');
 	var uistuff = $('.introstuff, .legend');
 
@@ -43,8 +43,8 @@ jQuery(document).ready(function($) {
 					orderdata: artjoin
 				},
 				success: function(data, textStatus, XMLHttpRequest) {
-					$('.formwrapper').append('<p class="updatedorder">'+ noriAJAX.msg_updatedorder + '</p>');
-					$('p.updatedorder').fadeOut(500);					
+					$('.formwrapper').append('<span class="updatedorder label label-success">'+ noriAJAX.msg_updatedorder + '</span>');
+					$('span.updatedorder').fadeOut(2000);					
 				}, 
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					$('.formwrapper').append('<p>' + noriAJAX.msg_error +'</p>');
@@ -273,22 +273,28 @@ jQuery(document).ready(function($) {
 		});
 	});
 
-	$('.countcont').popover({
+	$('.noricounter').popover({
 		title: 'Artículos seleccionados',
 		placement: 'bottom',
 		content: '<ul class="nori_articlelist"> Cargando artículos ... </ul>',
 		html: true		
 		});
 
-	$('body').delegate('.countcont', 'hover', 
+	$('body').click(function() {
+		$('.noricounter').popover('hide');
+	});	
+
+	$('body').delegate('.noricounter', 'click', 		
 		function(event) {
-			if(event.type == 'mouseenter'){
+			event.stopPropagation();
+			if(event.type == 'click'){
 				var e = $(this);
-				e.unbind('mouseenter');
+				var popover = $(this).data('popover');
+            	var shown = popover && popover.tip().is(':visible');
+            	populate('onlypopulate', '.nori_snippet .nori_articlelist');
+            	if(shown) return;
 				e.popover('show');
-				populate('onlypopulate', '.nori_snippet .nori_articlelist');
-			} else {
-				$(this).popover('hide');
-			}
+				
+			} 
 		});	
 });
