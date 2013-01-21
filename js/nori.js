@@ -1,3 +1,6 @@
+//General nori functions.
+
+//Populate article list main function, it accepts stuff.
 function populate(action, element) {
 	jQuery.ajax({
 			type: 'POST',
