@@ -84,14 +84,41 @@ ul.nori_articlelist li {
 
 .nori_snippet {
   float:left;
-  width:346px;
-  margin-top:6px;
+  width:400px;  
+  margin-left:99px;
+  margin-top:-5px;
+  background-color:#444343;
+  border-right:1px solid #ccc;
+}
+
+.nori-css p.norititle {
+  padding:9px 12px;
+  background-color:#444343;
+  color:white;
+  font-weight:bold;
+  font-size:12px;
+  overflow:hidden;
+  text-align: center;
+  width:136px;
+  float:left;
+  margin:0 10px 0 0;  
+  border-left:1px solid #ccc;
+}
+
+.norititle span {
+  display:block;  
+}
+
+.norititle .norisub {
+  font-size:10px;
+  font-weight:normal;
 }
 
 .nori_snippet .btn,
-.nori_snippet a.btn
+.nori_snippet a.btn,
+a.norimake-btn
  {
-  margin:0 5px 0 0;
+  margin:9px 5px 0 0;
 }
 
 .norititle {  

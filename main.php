@@ -189,18 +189,21 @@ function nori_articleCount(){
 function nori_snippet() {	
 	global $post;		
 		echo '<div class="nori-css nori_snippet">';		
-		echo '<span class="label norititle">Crea tu edición en PDF</span>';
-		echo '<span class="noricounter btn btn-mini btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
+		echo '<p class="norititle">
+			<span class="norititle-top">Crea tu revista en PDF</span>
+			<span class="norisub">(¿Qué es esto?)</span>
+			</p>';
+		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
 		if(is_single()):
-			printf('<span title="Añadir artículo a tu selección" class="btn btn-mini btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+			printf('<span title="Añadir artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
 		else:
-			printf('<span title="No puedes añadir nada aquí" class="btn btn-mini btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
+			printf('<span title="No puedes añadir nada aquí" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
 		endif;
 
 		if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
-			printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+			printf('<a class="norimake-btn nori-btn btn btn-small btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
 		else:
-			printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+			printf('<a class="norimake-btn nori-btn btn btn-small btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
 		endif;
 
 		//echo '<span class="info"></span>'
@@ -316,9 +319,9 @@ function articleUnit($id, $checkout = false, $onlypop = false) {
 	if($checkout == true && $onlypop == false):
 		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
 	elseif($checkout == false && $onlypop == false):
-		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Quitar artículo" class="nori-ui articledel icon-trash"></i></li>';
 	else:
-		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . '</li>';
+		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . '  <i title="Quitar artículo" class="nori-ui articledel icon-trash"></i></li>';
 	endif;
 }
 
