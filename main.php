@@ -48,6 +48,7 @@ define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
 define( 'NORI_PRINTER_DUDE', 'pablo@apie.cl');
 define( 'NORI_COSTPERPAGE', 400);
 define( 'NORI_MAXPAGES', 80);
+define( 'NORI_ALPHA', true);
 
 //Development constant to enable only registered users to use the app.
 
@@ -116,7 +117,8 @@ require_once( NORI_PATH . 'forms.php');
 //The session stuff
 function nori_StartSession() {
     if(!session_id()) {
-    	session_set_cookie_params(86400, '/', get_bloginfo('url'));
+    	//This isnt working.
+    	//session_set_cookie_params(86400, '/', get_bloginfo('url'));
         session_start();
     }
 }
@@ -184,25 +186,25 @@ function nori_articleCount(){
 	endif;		
 }
 
-function nori_snippet() {
-	global $post;
-	echo '<div class="nori-css nori_snippet">';		
-	echo '<span class="label norititle">Crea tu edición en PDF</span>';
-	echo '<span class="noricounter btn btn-mini btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
-	if(is_single()):
-		printf('<span title="Añadir artículo a tu selección" class="btn btn-mini btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
-	else:
-		printf('<span title="No puedes añadir nada aquí" class="btn btn-mini btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
-	endif;
+function nori_snippet() {	
+	global $post;		
+		echo '<div class="nori-css nori_snippet">';		
+		echo '<span class="label norititle">Crea tu edición en PDF</span>';
+		echo '<span class="noricounter btn btn-mini btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
+		if(is_single()):
+			printf('<span title="Añadir artículo a tu selección" class="btn btn-mini btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+		else:
+			printf('<span title="No puedes añadir nada aquí" class="btn btn-mini btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
+		endif;
 
-	if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
-		printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
-	else:
-		printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
-	endif;
+		if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
+			printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+		else:
+			printf('<a class="norimake-btn nori-btn btn btn-mini btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+		endif;
 
-	//echo '<span class="info"></span>'
-	echo '</div>';
+		//echo '<span class="info"></span>'
+		echo '</div>';	
 }
 
 //Nori central functions for selecting articles, adding pdfs, etc.
@@ -327,7 +329,7 @@ function ajaxSessionNori() {
 	$id = $_POST['id'];
 	
 	switch($command):
-		case('add'):
+		case('add'):			
 			$posts = 0;
 			//Check that is not the same post added twice
 			if(isset($_SESSION['articlesel'])):
@@ -336,12 +338,11 @@ function ajaxSessionNori() {
 			if(is_array($posts)):
 				if(!in_array($id, $posts)):
 					nori_addPost($id);					
-					articleUnit($id, false);					
+					//articleUnit($id, false);					
 				endif;
 			elseif($posts != $id):
 					nori_addPost($id);
-					articleUnit($id, false);
-
+					//articleUnit($id, false);
 			endif;
 			exit();
 		break;
