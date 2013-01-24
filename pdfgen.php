@@ -666,7 +666,7 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 	// This method has several options, check the source code documentation for more information.
 	$numpages = $pdf->getNumPages();
 
-	$pdf->Output(NORI_FILESPATH .'articulo-'.$fileid.'.pdf', 'F');
+	$pdf->Output(NORI_FILESPATH .'arte-y-critica-org-'.$fileid.'.pdf', 'F');
 	
 
 	if($forprint == true):		
@@ -675,7 +675,7 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);								
 	else:				
 		echo '<h3>'. NORIMSG_FILEREADY .'</h3>';				
-		echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'articulo-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
+		echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
 	endif;
 	
 	//============================================================+
