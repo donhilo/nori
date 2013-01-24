@@ -200,9 +200,9 @@ function nori_snippet() {
 			</p>';
 		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
 		if(is_single()):
-			printf('<span title="Añadir artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+			printf('<span title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
 		else:
-			printf('<span title="No puedes añadir nada aquí" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
+			printf('<span title="No puedes agregar artículos aquí" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
 		endif;
 
 		if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
