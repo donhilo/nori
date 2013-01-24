@@ -48,6 +48,7 @@ define( 'NORI_GENFONTS', NORI_FILESPATH . 'tcpdf-fonts/');
 define( 'NORI_PRINTER_DUDE', 'pablo@apie.cl');
 define( 'NORI_COSTPERPAGE', 400);
 define( 'NORI_MAXPAGES', 80);
+define( 'NORI_MAXARTICLES', 15);
 define( 'NORI_ALPHA', true);
 
 //Development constant to enable only registered users to use the app.
@@ -201,20 +202,20 @@ function nori_snippet() {
 		endif;
 
 		if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
-			printf('<a class="norimake-btn nori-btn btn btn-small btn-primary disabled" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary disabled inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');
 		else:
-			printf('<a class="norimake-btn nori-btn btn btn-small btn-primary" href="' . add_query_arg('norimake', 1, get_bloginfo('url')) . '"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </a>');
+			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');
 		endif;
 
 		//echo '<span class="info"></span>'
-		echo '</div>';	
+		echo '</div>';			
 }
 
 //Nori central functions for selecting articles, adding pdfs, etc.
-function nori_centralOps() {			
-		echo '<div class="nori_wrapper nori-css well">';
+function nori_centralOps($render = false) {			
+		echo '<div class="nori_wrapper nori-css">';
 		
-		if($_GET['norimake'] == 1):
+		if($render == true):
 			echo '<ul class="nori_articlelist" data-process="incheckout">';		
 		else:
 			echo '<h4>' . NORIMSG_SYSTEMTITLE . '</h4>';
@@ -229,21 +230,21 @@ function nori_centralOps() {
 
 		//Show Form for adding articles
 
-		nori_selectForm();
+		nori_selectForm($render);
 
 		echo '</div><!--Nori Wrapper-->';	
 }
 
 
-function nori_selectForm() {
+function nori_selectForm($render) {
 	global $post;	
 	//Adds Form to article selection
 		printf('<div class="formwrapper nori-css"><br/>');												
 					
-			if($_GET['norimake'] == 1):				
+			if($render == true):				
 
 				printf('<span class="nori-btn btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> ' . NORIMSG_GENERATE . '</span>');
-				printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> ' . NORIMSG_SENDTOPRINT . '</span>');				
+				//printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> ' . NORIMSG_SENDTOPRINT . '</span>');				
 
 			else:
 				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
@@ -279,6 +280,34 @@ function noriSection() {
 }
 
 add_action('template_redirect', 'noriSection', 1);
+
+
+//Añadir una sección de carga via AJAX
+
+function noriSection_ajax() {
+	echo '<div id="nori_make_renderbox" class="nori-css">';
+	echo '<div>';
+	echo '<h1>' . NORIMSG_SYSTEMTITLE . '</h1>';
+	echo '<div class="introstuff">';
+	echo '<p> ' . NORIMSG_RENDERINTRO . '</p>';
+	echo '<p> ' . NORIMSG_TIMEWARNING . '</p>';
+	echo '<p> ' . NORIMSG_LISTTITLE .  '</p>';
+	echo '</div>';
+
+    nori_centralOps(true);
+
+	echo '<div class="legend">';
+	echo '<p> <i class="icon icon-move"></i> ' . NORIMSG_REORDERINTRO . ' </p>';
+	echo '<p> <i class="icon icon-trash"></i> ' . NORIMSG_TRASHINTRO . '</p>';
+	echo '</div>';
+
+	echo '<div id="nori_result">';
+	echo '</div>';
+	echo '</div>';
+	echo '<span class="btn btn-primary" data-function="toggle-section"><i class="icon-white icon-remove"></i> Cerrar</span>';
+	echo '</div>';	
+	exit();
+}
 
 /*
 Session Management
@@ -317,9 +346,9 @@ add_action('wp_ajax_nopriv_ajaxNori', 'ajaxNori');
 //Single item layout
 function articleUnit($id, $checkout = false, $onlypop = false) {
 	if($checkout == true && $onlypop == false):
-		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash"></i></li>';
+		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move icon-white"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash icon-white"></i></li>';
 	elseif($checkout == false && $onlypop == false):
-		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Quitar artículo" class="nori-ui articledel icon-trash"></i></li>';
+		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Quitar artículo" class="nori-ui articledel icon-trash icon-white"></i></li>';
 	else:
 		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . '  <i title="Quitar artículo" class="nori-ui articledel icon-trash"></i></li>';
 	endif;
@@ -402,6 +431,11 @@ function ajaxSessionNori() {
 			if(isset($_POST['orderdata'])):					
 				nori_SessionSet('articlesel', $_POST['orderdata']);				
 			endif;
+			exit();
+		break;
+
+		case('ajaxSection'):
+			noriSection_ajax();
 			exit();
 		break;		
 
