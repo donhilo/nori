@@ -239,15 +239,27 @@ jQuery(document).ready(function($) {
 	});
 
 	$('.noricounter').popover({
-		title: 'Artículos seleccionados',
+		title: 'Canasta de artículos',
 		placement: 'bottom',
 		content: '<ul class="nori_articlelist"> Cargando artículos ... </ul>',
 		html: true		
 		});
 
 	$('body').click(function() {
-		$('.noricounter').popover('hide');		
-	});	
+		$('.noricounter').popover('hide');
+		$('.norititle').popover('hide');		
+	});
+
+	$('body').delegate('.norititle', 'click', 
+		function(event) {
+			event.stopPropagation();
+			if(event.type == 'click') {
+				var e = $(this);
+				var shown = popover && popover.tip().is(':visible');
+				if(shown) return;
+				e.popover('show');
+			}
+			});
 
 	$('body').delegate('.noricounter', 'click', 		
 		function(event) {
@@ -261,7 +273,15 @@ jQuery(document).ready(function($) {
 				e.popover('show');
 				
 			} 
-		});	
+		});
+
+	$('.norititle').popover({
+		title: 'Arma tu propia Revista Arte y Crítica (PDF)',
+		placement: 'bottom',
+		content: '<p>Si quieres tener un PDF con los artículos que te interesan, agrégalos a tu “Canasta de Artículos” mientras navegas en el sitio. Desde ahí puedes cambiar el orden de aparición, borrar o agregar otros para luego generar y descargar tu PDF personalizado.</p>'+ '<p>Puedes generar diferentes PDF, cada uno con diferentes artículos según tus gustos e intereses. Sólo debes crear uno a la vez: seleccionas los artículos > generas PDF > lo descargas,  > borras tu canasta de artículos y armas uno nuevo.</p><p>¡Es simple!</p>' + '<p>También lo quieres en formato Kindle o similares? ¿te gustaría tu propia edición pero impresa? ¿más personalizada?...bueno ¡calma!, esta es nuestra primera fase, ya vendrán novedades.</p>',
+		html: true
+
+	});		
 
 
 	//Tooltips

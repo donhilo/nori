@@ -63,7 +63,7 @@ define('NORIMSG_SENDTOPRINT', 'Enviar a imprenta');
 define('NORIMSG_ADDARTICLE', 'Añadir');
 define('NORIMSG_COMPOSE', 'Crear PDF');
 define('NORIMSG_DELETESELECTION', 'Borrar selección');
-define('NORIMSG_SYSTEMTITLE', 'Crea tu edición en PDF');
+define('NORIMSG_SYSTEMTITLE', 'Crea tu revista en PDF');
 define('NORIMSG_SHORTINTRO', 'Puedes seleccionar este artículo e incluirlo en tu propia edición en formato PDF.');
 define('NORIMSG_LISTTITLE', 'Has seleccionado los siguientes artículos:');
 define('NORIMSG_NOARTICLES', 'No hay ningún artículo seleccionado');
@@ -196,7 +196,7 @@ function nori_snippet() {
 		echo '<div class="nori-css nori_snippet">';		
 		echo '<p class="norititle">
 			<span class="norititle-top">' . NORIMSG_CREATEMAGAZINE .'</span>
-			<span class="norisub">' . NORIMSG_WHATSTHIS .'</span>
+			<span class="norisub">' . NORIMSG_WHATSTHIS .'</span>			
 			</p>';
 		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
 		if(is_single()):
