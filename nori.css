@@ -8,6 +8,12 @@ h3.nori_headtitle {
   margin:0;
 }
 
+.nori_wrapper ul.nori_articlelist {
+  padding:12px;
+  background-color:rgba(255,255,255,0.2);
+  border-radius:6px;
+}
+
 ul.nori_articlelist li {
 	margin-bottom:6px;
 	padding:4px 6px;	
@@ -90,7 +96,7 @@ ul.nori_articlelist li {
 #nori_make_renderbox .legend p {
   font-size:14px;
   font-style:italic;
-  color:#555;
+  color:#ccc;
 }
 
 .made-pdf h3 {
