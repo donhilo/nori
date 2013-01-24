@@ -286,7 +286,7 @@ jQuery(document).ready(function($) {
 	$('.norititle').popover({
 		title: 'Arma tu propia Revista Arte y Crítica (PDF)',
 		placement: 'bottom',
-		content: '<p>Si quieres tener un PDF con los artículos que te interesan, agrégalos a tu “Canasta de Artículos” mientras navegas en el sitio. Desde ahí puedes cambiar el orden de aparición, borrar o agregar otros para luego generar y descargar tu PDF personalizado.</p>'+ '<p>Puedes generar diferentes PDF, cada uno con diferentes artículos según tus gustos e intereses. Sólo debes crear uno a la vez: seleccionas los artículos > generas PDF > lo descargas,  > borras tu canasta de artículos y armas uno nuevo.</p><p>¡Es simple!</p>' + '<p>También lo quieres en formato Kindle o similares? ¿te gustaría tu propia edición pero impresa? ¿más personalizada?...bueno ¡calma!, esta es nuestra primera fase, ya vendrán novedades.</p>',
+		content: '<p>Si quieres tener una edición descargable con los artículos que te interesan, agrégalos a tu “Canasta de Artículos” (botón Agregar) mientras navegas en el sitio. Desde ahí puedes cambiar el orden de aparición, borrar o agregar otros para luego generar y descargar tu PDF personalizado.</p>'+ '<p>Puedes generar diferentes PDF, cada uno con diferentes artículos según tus gustos e intereses. Sólo debes crear uno a la vez: seleccionas los artículos &rarr; generas PDF &rarr; lo descargas,  &rarr; borras tu canasta de artículos y armas uno nuevo.</p><p>¡Es simple!</p>' + '<p>También lo quieres en formato Kindle o similares? ¿te gustaría tu propia edición pero impresa? ¿más personalizada?...bueno ¡calma!, esta es nuestra primera fase, ya vendrán novedades.</p>',
 		html: true
 
 	});		
@@ -301,12 +301,12 @@ jQuery(document).ready(function($) {
 
 	$('#add-article').tooltip({
 		placement: 'bottom',
-		title: 'Añadir este artículo a tu selección.'
+		title: 'Agregar este artículo a tu selección.'
 	});
 
 	$('.norimake-btn').tooltip({
 		placement: 'bottom',
-		title: 'Crear un compilado en PDF a partir de tu selección.'
+		title: 'Crear una revista en PDF a partir de tu selección.'
 	});	
 
 //Cosas de imprenta

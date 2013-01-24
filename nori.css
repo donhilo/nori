@@ -14,6 +14,10 @@ h3.nori_headtitle {
   border-radius:6px;
 }
 
+.introstuff {
+  line-height:1.2em;
+}
+
 ul.nori_articlelist li {
 	margin-bottom:6px;
 	padding:4px 6px;	
@@ -84,7 +88,7 @@ ul.nori_articlelist li {
 }
 
 #nori_make_renderbox p {
-  margin-bottom:12px;
+  margin-bottom:6px;
   font-size:16px;
 }
 
