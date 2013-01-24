@@ -301,8 +301,8 @@ function noriSection_ajax() {
     nori_centralOps(true);
 
 	echo '<div class="legend">';
-	echo '<p> <i class="icon icon-move"></i> ' . NORIMSG_REORDERINTRO . ' </p>';
-	echo '<p> <i class="icon icon-trash"></i> ' . NORIMSG_TRASHINTRO . '</p>';
+	echo '<p> <i class="icon-white icon-move"></i> ' . NORIMSG_REORDERINTRO . ' </p>';
+	echo '<p> <i class="icon-white icon-trash"></i> ' . NORIMSG_TRASHINTRO . '</p>';
 	echo '</div>';
 
 	echo '<div id="nori_result">';
