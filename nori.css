@@ -105,7 +105,7 @@ ul.nori_articlelist li {
 .nori_snippet {
   float:left;
   width:400px;  
-  margin-left:99px;
+  margin-left:0;
   margin-top:-5px;
   background-color:#444343;
   border-right:1px solid #ccc;

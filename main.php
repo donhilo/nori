@@ -58,7 +58,7 @@ define('NORI_LOGO', NORI_PATH . 'logo/ayc_logo.png');
 
 //Text chains
 
-define('NORIMSG_GENERATE', 'Generar PDF' );
+define('NORIMSG_GENERATE', 'Crea tu revista en PDF' );
 define('NORIMSG_SENDTOPRINT', 'Enviar a imprenta');
 define('NORIMSG_ADDARTICLE', 'Añadir');
 define('NORIMSG_COMPOSE', 'Crear PDF');
