@@ -671,7 +671,7 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 
 	if($forprint == true):		
 		echo '<h3>Información y datos enviados por mail.</h3>';
-			$pdflink = NORI_FILESURL . 'articulo-'.$fileid.'.pdf';					
+			$pdflink = NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf';					
 			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);								
 	else:				
 		echo '<h3>'. NORIMSG_FILEREADY .'</h3>';				

@@ -309,6 +309,12 @@ jQuery(document).ready(function($) {
 		title: 'Crear una revista en PDF a partir de tu selección.'
 	});	
 
+	$('body').tooltip({
+		selector: 'li.articleUnit i'
+	})
+
+	
+
 //Cosas de imprenta
 
 $('#payandprint').on('click', function(e) {

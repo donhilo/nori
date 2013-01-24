@@ -62,7 +62,7 @@ define('NORIMSG_GENERATE', 'Crea tu revista en PDF' );
 define('NORIMSG_SENDTOPRINT', 'Enviar a imprenta');
 define('NORIMSG_ADDARTICLE', 'Agregar');
 define('NORIMSG_COMPOSE', 'Crear PDF');
-define('NORIMSG_DELETESELECTION', 'Borrar selección');
+define('NORIMSG_DELETESELECTION', 'Borrar <strong>toda</strong> la selección');
 define('NORIMSG_SYSTEMTITLE', 'Crea tu revista en PDF');
 define('NORIMSG_SHORTINTRO', 'Puedes seleccionar este artículo e incluirlo en tu propia edición en formato PDF.');
 define('NORIMSG_LISTTITLE', 'Has seleccionado los siguientes artículos:');
@@ -350,11 +350,11 @@ add_action('wp_ajax_nopriv_ajaxNori', 'ajaxNori');
 //Single item layout
 function articleUnit($id, $checkout = false, $onlypop = false) {
 	if($checkout == true && $onlypop == false):
-		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i class="icon-move icon-white"></i> ' . get_the_title(intval($id)) . ' <i class="nori-ui articledel icon-trash icon-white"></i></li>';
+		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i title="Arrastra para cambiar orden de articulo" class="icon-move icon-white"></i> ' . get_the_title(intval($id)) . ' <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash icon-white"></i></li>';
 	elseif($checkout == false && $onlypop == false):
-		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Quitar artículo" class="nori-ui articledel icon-trash icon-white"></i></li>';
+		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash icon-white"></i></li>';
 	else:
-		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . '  <i title="Quitar artículo" class="nori-ui articledel icon-trash"></i></li>';
+		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . '  <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash"></i></li>';
 	endif;
 }
 
