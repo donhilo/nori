@@ -247,19 +247,27 @@ jQuery(document).ready(function($) {
 
 	$('body').click(function() {
 		$('.noricounter').popover('hide');
-		$('.norititle').popover('hide');		
+		//$('.norititle').popover('hide');		
 	});
 
-	$('body').delegate('.norititle', 'click', 
-		function(event) {
-			event.stopPropagation();
-			if(event.type == 'click') {
-				var e = $(this);
-				var shown = popover && popover.tip().is(':visible');
-				if(shown) return;
-				e.popover('show');
-			}
-			});
+	$('.norititle').hover(function() {
+		$(this).popover('show')
+	},
+		function() {
+			$(this).popover('hide');
+		}
+	);
+
+	// $('body').delegate('.norititle', 'click', 
+	// 	function(event) {
+	// 		event.stopPropagation();
+	// 		if(event.type == 'click') {
+	// 			var e = $(this);
+	// 			var shown = popover && popover.tip().is(':visible');
+	// 			if(shown) return;
+	// 			e.popover('show');
+	// 		}
+	// 		});
 
 	$('body').delegate('.noricounter', 'click', 		
 		function(event) {
