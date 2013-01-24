@@ -104,12 +104,12 @@ ul.nori_articlelist li {
 
 .nori_snippet {
   float:left;
-  width:400px;  
+  width:420px;  
   margin-left:0;
   margin-top:-5px;
   background-color:#444343;
   border-right:1px solid #ccc;
-  padding-bottom:3px;
+  padding-bottom:0;
 }
 
 .nori-css p.norititle {
