@@ -72,12 +72,16 @@ define('NORIMSG_REORDERINTRO', 'También puedes reordenar los artículos arrastr
 define('NORIMSG_TIMEWARNING', 'Ten en cuenta que a mayor cantidad de artículos, mayor es el tiempo que demorará la generación de la edición.');
 define('NORIMSG_TRASHINTRO', 'Puedes borrar artículos de la lista haciendo clic en el basurero.');
 define('NORIMSG_STOREINTRO', 'Puedes guardar tu selección de artículos vía URL haciendo clic aquí');
+define('NORIMSG_CREATEMAGAZINE', 'Crea tu revista en PDF');
+define('NORIMSG_WHATSTHIS', '¿Qué es esto?');
+define('NORIMSG_FILEREADY', 'Tu revista PDF está lista para descargar');
+define('NORIMSG_DOWNLOAD', 'Descargar');
 
 //js text chains
 
 define('NORIMSG_LOADINGSELECTION', 'Cargando selección...');
-define('NORIMSG_GENERATING', 'Generando libro electrónico ...');
-define('NORIMSG_TIMEEXPLANATION', 'La creación del archivo pdf puede tomar un tiempo dependiendo de la cantidad de artículos e imágenes. Por favor, no cierres esta página.');
+define('NORIMSG_GENERATING', 'Generando tu revista PDF ...');
+define('NORIMSG_TIMEEXPLANATION', 'La creación de la revista en PDF puede tomar un tiempo dependiendo de la cantidad de artículos e imágenes. Por favor, no cierres esta página.');
 define('NORIMSG_UPDATEDORDER', 'Orden actualizado!');
 define('NORIMSG_ERROR', 'Error general');
 define('NORIMSG_NONAME', 'Falta que pongas tu nombre');
@@ -191,8 +195,8 @@ function nori_snippet() {
 	global $post;		
 		echo '<div class="nori-css nori_snippet">';		
 		echo '<p class="norititle">
-			<span class="norititle-top">Crea tu revista en PDF</span>
-			<span class="norisub">(¿Qué es esto?)</span>
+			<span class="norititle-top">' . NORIMSG_CREATEMAGAZINE .'</span>
+			<span class="norisub">' . NORIMSG_WHATSTHIS .'</span>
 			</p>';
 		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
 		if(is_single()):
