@@ -232,7 +232,7 @@
 
 .nori-css body {
   margin: 0;
-  font-family: "PT Sans Narrow", sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -731,7 +731,7 @@
 .nori-css h6 {
   margin: 10px 0;
   font-family: inherit;
-  font-weight: bold;
+  font-weight: normal;
   line-height: 20px;
   color: inherit;
   text-rendering: optimizelegibility;
@@ -1054,7 +1054,7 @@
 .nori-css button,
 .nori-css select,
 .nori-css textarea {
-  font-family: "PT Sans Narrow", sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
 }
 
 .nori-css label {
@@ -4443,7 +4443,7 @@ textarea.span1,
 .nori-css .navbar-search .search-query {
   padding: 4px 14px;
   margin-bottom: 0;
-  font-family: "PT Sans Narrow", sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-size: 13px;
   font-weight: normal;
   line-height: 1;
@@ -5250,6 +5250,9 @@ textarea.span1,
   -webkit-border-radius: 10px;
      -moz-border-radius: 10px;
           border-radius: 10px;
+  -webkit-box-shadow: 0 0 3px #333333;
+     -moz-box-shadow: 0 0 3px #333333;
+          box-shadow: 0 0 3px #333333;
 }
 
 .nori-css .tooltip-arrow {

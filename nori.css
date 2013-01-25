@@ -29,13 +29,8 @@ ul.nori_articlelist li {
 		margin-bottom:3px;
 			}
 
-.nori-btn {
-	display:block;
-	padding:6px;
-	background-color:#ccc;
-	border-radius:5px;
-	margin:3px;
-	cursor:pointer;
+.nori_snippet .btn {		
+  margin:5px 3px 0 0;
 }
 
 .nori-ajaxstatus {
@@ -96,6 +91,10 @@ ul.nori_articlelist li {
   margin:16px auto 0; 
 }
 
+#nori_make_renderbox button {
+  margin-right:5px;
+}
+
 #nori_make_renderbox .nori_wrapper {
   margin:24px 0;     
 }
@@ -133,8 +132,7 @@ ul.nori_articlelist li {
 .nori_snippet {
   float:left;
   width:426px;  
-  margin-left:0;
-  margin-top:-5px;
+  margin-left:0;  
   background:#444343 url(imgs/blackorchid.png);
   border-right:1px solid #282828;
   border-left:1px solid #282828;
@@ -166,7 +164,7 @@ ul.nori_articlelist li {
 .nori_snippet a.btn,
 a.norimake-btn
  {
-  margin:9px 5px 0 0;
+  
 }
 
 .norititle {  

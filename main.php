@@ -195,6 +195,7 @@ function nori_articleCount(){
 	endif;		
 }
 
+//Handles all the app logic NOW
 function nori_snippet() {	
 	global $post;
 		if(isset($_SESSION['articlesel'])):
@@ -205,7 +206,8 @@ function nori_snippet() {
 			<span class="norititle-top">' . NORIMSG_CREATEMAGAZINE .'</span>
 			<span class="norisub">' . NORIMSG_WHATSTHIS .'</span>			
 			</p>';
-		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> <img src="'. NORI_URL . '/imgs/clock.gif"> </span></span>';	
+		
+		echo '<button class="noricounter btn btn-small btn-info"><i class="icon-shopping-cart icon-white"></i> <span class="nori_number"> <img src="'. NORI_URL . '/imgs/clock.gif"> </span></button>';	
 		/* Condiciones para que el boton de añadir esté activo:
 		*	1. Estás en un artículo Single
 		*	2. No has superado el máximo de artículos
@@ -213,23 +215,24 @@ function nori_snippet() {
 		*/
 		if(is_single()):
 			if($artsel && count($artsel) >= NORI_MAXARTICLES):
-				printf('<span title="Has agregado el máximo número de artículos para tu revista (' . NORI_MAXARTICLES .')" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');										
+				printf('<button title="Has agregado el máximo número de artículos para tu revista (' . NORI_MAXARTICLES .')" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</button>');										
 			elseif($artsel && in_array($post->ID, $artsel)):
-				printf('<span title="Ya has agregado este artículo" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
+				printf('<button title="Ya has agregado este artículo" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</button>');									
 			else:
-				printf('<span title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');					
+				printf('<button title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</button>');					
 			endif;
 		else:
-			printf('<span title="¡Esto no es agregable! Debes entrar a un artículo en particular para poder agregarlo a tu canasta" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
+			printf('<button title="¡Esto no es agregable! Debes entrar a un artículo en particular para poder agregarlo a tu canasta" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</button>');									
 		endif;		
 
 		if(isset($_SESSION['articlesel'])):
-			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');			
+			printf('<button id="trigger-norisection" class="norimake-btn btn btn-small btn-primary inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </button>');			
 		else:
-			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary disabled inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');
+			printf('<button id="trigger-norisection" class="norimake-btn btn btn-small btn-primary disabled inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </button>');
 		endif;
 
 		//echo '<span class="info"></span>'
+		
 		echo '</div>';			
 }
 
@@ -265,16 +268,16 @@ function nori_selectForm($render) {
 					
 			if($render == true):				
 
-				printf('<span class="nori-btn btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> ' . NORIMSG_GENERATE . '</span>');
+				printf('<button class="btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> ' . NORIMSG_GENERATE . '</button>');
 				//printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> ' . NORIMSG_SENDTOPRINT . '</span>');				
 
 			else:
-				printf('<span class="nori-btn btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+				printf('<button class="btn" data-id="' . $post->ID .'" id="add-article"><i class="icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</button>');				
 				
 			
 			endif;
 
-			printf('<span class="nori-btn btn btn-inverse" id="borrar-articulos" name="delete-all"><i class="icon-white icon-trash"></i> ' . NORIMSG_DELETESELECTION .'</span>');
+			printf('<button class="btn btn-inverse" id="borrar-articulos" name="delete-all"><i class="icon-white icon-trash"></i> ' . NORIMSG_DELETESELECTION .'</button>');
 		printf('<br/></div>');			
 				
 	}
@@ -326,7 +329,7 @@ function noriSection_ajax() {
 	echo '<div id="nori_result">';
 	echo '</div>';
 	echo '</div>';
-	echo '<span class="btn btn-primary" data-function="toggle-section"><i class="icon-white icon-remove"></i> Cerrar</span>';
+	echo '<button class="btn btn-primary" data-function="toggle-section"><i class="icon-white icon-remove"></i> Cerrar</button>';
 	echo '</div>';	
 	exit();
 }
