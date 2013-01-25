@@ -272,7 +272,7 @@ class noriPDF extends TCPDF {
 		$this->Image($index_image, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
 		//Añadir datos del colofon
 		$this->SetLeftMargin(35);
-		$this->setY(60);
+		$this->setY(64);
 		//Colofon puesto a la maleta, luego habrá que desarrollar un panel para añadir esta info
 		$blocks = array();
 		$blocks[] = 	
