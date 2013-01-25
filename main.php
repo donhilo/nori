@@ -204,7 +204,7 @@ function nori_snippet() {
 		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> <img src="'. NORI_URL . '/imgs/clock.gif"> </span></span>';	
 		if($artsel && in_array($post->ID, $artsel)):
 			printf('<span title="Ya has agregado este artículo" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
-		elseif($artsel && !in_array($post->ID, $artsel) && is_single()):
+		elseif($artsel && !in_array($post->ID, $artsel) && is_single() || !isset($artsel) && is_single()):
 			printf('<span title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
 		else:
 			printf('<span title="En esta parte no puedes agregar artículos" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
