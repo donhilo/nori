@@ -174,9 +174,13 @@ function nori_removePost($postid) {
 		$noriarts = $_SESSION['articlesel'];		
 		$ids = explode(',', $noriarts);
 		$remkey = array_search($postid, $ids);
-		unset($ids[$remkey]);		
-		$impids_del = implode(',', $ids);			
-		nori_SessionSet('articlesel', $impids_del);			
+		unset($ids[$remkey]);
+		if(count($ids) < 1):
+			nori_EndSession();
+		else:		
+			$impids_del = implode(',', $ids);			
+			nori_SessionSet('articlesel', $impids_del);			
+		endif;
 	}
 }
 
@@ -202,20 +206,27 @@ function nori_snippet() {
 			<span class="norisub">' . NORIMSG_WHATSTHIS .'</span>			
 			</p>';
 		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> <img src="'. NORI_URL . '/imgs/clock.gif"> </span></span>';	
-		if($artsel && count($artsel) >= NORI_MAXARTICLES):
-			printf('<span title="Has agregado el máximo número de artículos para tu revista (' . NORI_MAXARTICLES .')" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
-		elseif($artsel && in_array($post->ID, $artsel)):
-			printf('<span title="Ya has agregado este artículo" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
-		elseif($artsel && !in_array($post->ID, $artsel) && is_single() || !isset($artsel) && is_single()):
-			printf('<span title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
+		/* Condiciones para que el boton de añadir esté activo:
+		*	1. Estás en un artículo Single
+		*	2. No has superado el máximo de artículos
+		*	3. El artículo no ha sido previamente agregado
+		*/
+		if(is_single()):
+			if($artsel && count($artsel) >= NORI_MAXARTICLES):
+				printf('<span title="Has agregado el máximo número de artículos para tu revista (' . NORI_MAXARTICLES .')" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');										
+			elseif($artsel && in_array($post->ID, $artsel)):
+				printf('<span title="Ya has agregado este artículo" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
+			else:
+				printf('<span title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');					
+			endif;
 		else:
-			printf('<span title="En esta parte no puedes agregar artículos" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
-		endif;
+			printf('<span title="¡Esto no es agregable! Debes entrar a un artículo en particular para poder agregarlo a tu canasta" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
+		endif;		
 
-		if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
-			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary disabled inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');
+		if(isset($_SESSION['articlesel'])):
+			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');			
 		else:
-			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');
+			printf('<span id="trigger-norisection" class="norimake-btn nori-btn btn btn-small btn-primary disabled inactive"><i class="icon-white icon-cog"></i> ' . NORIMSG_COMPOSE .' </span>');
 		endif;
 
 		//echo '<span class="info"></span>'

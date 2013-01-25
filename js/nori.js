@@ -213,7 +213,8 @@ jQuery(document).ready(function($) {
 	});
 //Different calls cause I call this stuff via AJAX
 	$(document).on('click', '.articledel', function() {	
-		parentli = $(this).parent('li');				
+		parentli = $(this).parent('li');						
+		parentli.css('background-color', 'rgba(186, 75, 49, 0.8)')
 		$.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
@@ -224,8 +225,13 @@ jQuery(document).ready(function($) {
 			},
 
 			success: function(data, textStatus, XMLHttpRequest) {								
-				parentli.remove();
-				console.log(parentli.data('id'));
+				parentli					
+					.fadeOut(1000, function() {
+					$(this).remove();
+				});
+				$('.noricounter').popover('show');
+				populate('onlypopulate', '.nori_snippet .nori_articlelist');									
+				console.log('removed' + parentli.data('id'));
 					$.ajax({
 						type: 'POST',
 						url: noriAJAX.ajaxurl,
