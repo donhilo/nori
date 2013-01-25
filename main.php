@@ -74,7 +74,7 @@ define('NORIMSG_TRASHINTRO', 'Puedes borrar artículos de la lista haciendo clic
 define('NORIMSG_STOREINTRO', 'Puedes guardar tu selección de artículos vía URL haciendo clic aquí');
 define('NORIMSG_CREATEMAGAZINE', 'Crea tu revista en PDF');
 define('NORIMSG_WHATSTHIS', '¿Qué es esto?');
-define('NORIMSG_FILEREADY', 'Tu revista PDF está lista para descargar');
+define('NORIMSG_FILEREADY', '¡Listo! Descarga tu revista PDF');
 define('NORIMSG_DOWNLOAD', 'Descargar');
 
 //js text chains
@@ -192,17 +192,22 @@ function nori_articleCount(){
 }
 
 function nori_snippet() {	
-	global $post;		
+	global $post;
+		if(isset($_SESSION['articlesel'])):
+			$artsel = explode(',', $_SESSION['articlesel']); 		
+		endif;
 		echo '<div class="nori-css nori_snippet">';		
 		echo '<p class="norititle">
 			<span class="norititle-top">' . NORIMSG_CREATEMAGAZINE .'</span>
 			<span class="norisub">' . NORIMSG_WHATSTHIS .'</span>			
 			</p>';
-		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> ... </span></span>';	
-		if(is_single()):
+		echo '<span class="noricounter btn btn-small btn-info"><i class="icon-list-alt icon-white"></i> <span class="nori_number"> <img src="'. NORI_URL . '/imgs/clock.gif"> </span></span>';	
+		if($artsel && in_array($post->ID, $artsel)):
+			printf('<span title="Ya has agregado este artículo" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
+		elseif($artsel && !in_array($post->ID, $artsel) && is_single()):
 			printf('<span title="Agregar artículo a tu selección" class="btn btn-small btn-success" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');				
 		else:
-			printf('<span title="No puedes agregar artículos aquí" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');						
+			printf('<span title="En esta parte no puedes agregar artículos" class="btn btn-small btn-success disabled" data-id="' . $post->ID .'" id="add-article"><i class="icon-white icon-plus"></i> ' . NORIMSG_ADDARTICLE . '</span>');									
 		endif;
 
 		if($_GET['norimake'] == 1 || !isset($_SESSION['articlesel'])):
@@ -289,7 +294,7 @@ add_action('template_redirect', 'noriSection', 1);
 //Añadir una sección de carga via AJAX
 
 function noriSection_ajax() {
-	echo '<div id="nori_make_renderbox" class="nori-css">';
+	echo '<div id="nori_make_renderbox">';
 	echo '<div>';
 	echo '<h1>' . NORIMSG_SYSTEMTITLE . '</h1>';
 	echo '<div class="introstuff">';

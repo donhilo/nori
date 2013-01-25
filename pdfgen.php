@@ -363,9 +363,10 @@ class noriPDF extends TCPDF {
 				$this->setFontSize(8);
 				
 				$curY = $this->getImageRBY();				
-				
-				$this->Text(0, $curY - 6 , $mainimage['title'], false, false, true, 0,0, 'R');
-
+				$this->setFillColor(0,0,0,100);
+				$this->setAlpha(0.6);
+				$this->Text(0, $curY - 6 , $mainimage['title'], false, false, true, 0,0, 'R', true);
+				$this->setAlpha(1);
 				//The image is tall, I need a new page
 				
 				if( $curY > 220):
@@ -674,8 +675,10 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 			$pdflink = NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf';					
 			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);								
 	else:				
+		echo '<div class="nori-ajaxstatus nori-success">';
 		echo '<h3>'. NORIMSG_FILEREADY .'</h3>';				
 		echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
+		echo '</div>';
 	endif;
 	
 	//============================================================+
