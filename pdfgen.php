@@ -216,17 +216,24 @@ class noriPDF extends TCPDF {
     	$this->pagesize[0] = 230 + $this->bleed_margin;     	
     	$this->pagesize[1] = 310 + $this->bleed_margin;
     	
-    	$frontpages = array(
-    		'frontpages/daniel_reyes_portada.jpg',
-    		'frontpages/javier_rodriguez_portada.jpg',
-    		'frontpages/jorge_gonzalez_portada.jpg',
-    		);
+    	$frontpages = array();
+    	$frontpages[] = array(
+    						'src' => NORI_URL . 'frontpages/daniel_reyes_portada.jpg',
+    						'name' => 'Daniel Reyes León');
+    	$frontpages[] = array(
+    						'src' => NORI_URL . 'frontpages/javier_rodriguez_portada.jpg',
+    						'name' => 'Javier Rodríguez');
+    	$frontpages[] = array(
+    						'src' => NORI_URL . 'frontpages/jorge_gonzalez_portada.jpg',
+    						'name' => 'Jorge González'
+    					);	   			
+    		
 
     	$chfront = array_rand($frontpages);
     	
-    	$this->frontpage_image = NORI_URL . $frontpages[$chfront];
+    	$this->frontpage_image = $frontpages[$chfront];
     	
-    	$this->index_image = NORI_URL . 'examples/creditos_test.jpg';
+    	$this->index_image = NORI_URL . 'examples/creditos_test_blanco.jpg';
     	$this->indexbg_image = NORI_URL . 'examples/indice_test.jpg';
 
     	$pagesize = array($this->pagesize[0], $this->pagesize[1]);
@@ -251,10 +258,11 @@ class noriPDF extends TCPDF {
 		$this->AddPage();		
 		$bMargin = $this->getBreakMargin();				
 		//Portada es una pura imagen
-		$this->Image($front_image, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
+		$this->Image($front_image['src'], 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
 		
 	}
 
+//Colofon
 	public function makePreIndex($index_image) {
 		$auto_page_break = $this->getAutoPageBreak();		
 		$this->SetAutoPageBreak(false, 0);		
@@ -262,7 +270,62 @@ class noriPDF extends TCPDF {
 		$bMargin = $this->getBreakMargin();				
 		//Portada es una pura imagen
 		$this->Image($index_image, 0, 0, $this->pagesize[0], $this->pagesize[1], '', '', '', false, 300, '', false, false, 0);
-	}   
+		//Añadir datos del colofon
+		$this->SetLeftMargin(35);
+		$this->setY(60);
+		//Colofon puesto a la maleta, luego habrá que desarrollar un panel para añadir esta info
+		$blocks = array();
+		$blocks[] = 	
+		array(
+			'Adrede Editora',
+			'Seminario #295, Providencia',
+			'Santiago de Chile',
+			'+56 2 250 456 78',
+			'info@adrededitora.cl',
+			'adrededitora.cl'
+			);
+		$blocks[] = 
+		array(
+			'Asesoría digital:',
+			'A Pie',
+			'escribenos@apie.cl',
+			'+56 9 947 042 53',
+			'Santiago de Chile'
+			);
+		$blocks[] = 
+		array(
+			'Imagen portada:',
+			'Cortesía de ' . $this->frontpage_image['name']
+			);
+		$blocks[] =
+		array(
+			'Licencia:',
+			'Algunos derechos reservados.',
+			'Revista Arte y Crítica se encuentra bajo una Licencia Creative Commons:',
+			'Atribución / No Comercial / Sin derivadas / 3.0 /  Internacional.'
+			);
+
+		foreach($blocks as $block){
+			$this->colophon_block($block);
+			$this->Ln();
+			$this->Ln();
+			}
+
+		}  
+
+
+	public function colophon_block($linesarray) {
+		foreach($linesarray as $key=>$line){
+			if($key == 0):
+				$this->setFontSize(16);
+			else:
+				$this->setFontSize(12);
+			endif;	
+			$this->Cell(100, 0, $line);
+			$this->Ln();			
+		}
+	}
+
 
  //Page header
     public function Header() {
