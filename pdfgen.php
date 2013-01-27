@@ -626,7 +626,7 @@ public function nori_makePrintableBooklet() {
 }
 
 
-function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {	
+function nori_makePdf($postobj, $use = 'web', $extradata = NULL) {	
 
 	$artids = explode(',', $postobj);
 	
@@ -719,7 +719,7 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 
 	//Sort pages for printing (need a nice way of combine pages)
 
-	if($forprint == true):
+	if($use == 'print'):
 	 	$pdf->nori_makePrintableBooklet();
 	endif;
 
@@ -728,21 +728,38 @@ function nori_makePdf($postobj, $forprint = false, $extradata = NULL) {
 
 	// Close and output PDF document
 	// This method has several options, check the source code documentation for more information.
-	$numpages = $pdf->getNumPages();
-
-	$pdf->Output(NORI_FILESPATH .'arte-y-critica-org-'.$fileid.'.pdf', 'F');
+	$numpages = $pdf->getNumPages();	
 	
-
-	if($forprint == true):		
-		echo '<h3>Información y datos enviados por mail.</h3>';
+	switch($use){
+		case('web'):
+			$pdf->Output(NORI_FILESPATH .'arte-y-critica-org-'.$fileid.'.pdf', 'F');
+			echo '<div class="nori-ajaxstatus nori-success">';
+			echo '<h3>'. NORIMSG_FILEREADY .'</h3>';				
+			echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
+			echo '</div>';
+		break;
+		case('print'):
+			$pdf->Output(NORI_FILESPATH .'arte-y-critica-org-print-'.$fileid.'.pdf', 'F');
+			echo '<h3>Información y datos enviados por mail.</h3>';
 			$pdflink = NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf';					
-			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);								
-	else:				
-		echo '<div class="nori-ajaxstatus nori-success">';
-		echo '<h3>'. NORIMSG_FILEREADY .'</h3>';				
-		echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
-		echo '</div>';
-	endif;
+			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);
+		break;
+		case('edition'):
+			//Check if file exists (this generation is expensive.)
+			if(!file_exists(NORI_FILESPATH . 'edicion-arte-y-critica-org-'.$extradata.'.pdf')){				
+					$pdf->Output(NORI_FILESPATH .'edicion-arte-y-critica-org-'.$extradata.'.pdf', 'F');				
+					$pdflink = NORI_FILESURL . 'edicion-arte-y-critica-org-'.$extradata.'.pdf';
+					//Print stuff in file
+					update_post_meta( $extradata, 'edicion_url', $pdflink);
+					echo '<h3>Archivo de edición Generado</h3>';				
+					echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'edicion-arte-y-critica-org-'.$extradata.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
+					echo '<p>También se ha añadido la URL del archivo a un campo personalizado que se vinculará automáticamente al número de edición</p>';
+				} else {
+					echo '<h3>Ya habías generado antes el archivo de edición</h3>';
+				}
+		break;
+	}
+	
 	
 	//============================================================+
 	// END OF FILE
@@ -760,4 +777,41 @@ function strtoupper_es($a) {
       " ú" => " U",
       " ñ" => " Ñ" 
     )); 
+} 
+
+//Generates a compilation of the number ONCE
+//Really specific to the website.
+
+function nori_makePdfEdition($edition) {
+	//args postcuratorial
+	$ids = array();
+	$args_postcuratorial = array(
+							'numberposts'=> 1,
+							'post_type'=> 'ayc_postcur',
+							'meta_key' => 'aycmb_edicion',
+							'meta_value'=> $edition
+							);
+	//args resto articulos
+	$args_restoarticulos = array(
+							'numberposts' => -1,
+							'post_type' => array(
+									'ayc_artcrit',
+									'ayc_cronica',
+									'ayc_entrevista',
+									'ayc_ensayo',
+									'post'
+									),
+							'meta_key' => 'aycmb_edicion',
+							'meta_value'=> $edition,
+							'orderby'=> 'rand'											
+							);
+	$postcuratorial = get_posts($args_postcuratorial);
+	$restoarticulos = get_posts($args_restoarticulos);
+	foreach($restoarticulos as $ra) {
+		$ids[] = $ra->ID;		
+	}
+		
+		array_unshift($ids, $postcuratorial[0]->ID);
+		$strids = implode(',', $ids);
+		nori_makePdf($strids, 'edition', $edition);
 } 

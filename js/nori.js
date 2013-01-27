@@ -142,6 +142,35 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	$(document).on('click', 'button.make-edition', function() {
+		
+		var resultbox = $('.nori_wrapper');		
+		var edid = $(this).data('edition-id');
+		resultbox
+			.empty()
+			.hide()
+			.append('<div class="nori-ajaxstatus nori-generating"><h3><img src="'+ noriAJAX.noriurl +'/imgs/ajax-loader.gif"/> ' + noriAJAX.msg_generating + '</h3><p>' + noriAJAX.msg_timeexplanation +'</p></div>')
+			.fadeIn();		
+		$.ajax({
+			type: 'POST',
+			url: noriAJAX.ajaxurl,
+			data: {
+				action: 'ajaxNori',
+				edition: 'yes',
+				edid: edid,
+				forprint: 'no'
+			},
+			success: function(data, textStatus, XMLHttpRequest) {								
+				resultbox.empty().hide()
+				.append(data)
+				.fadeIn();
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				resultbox.append(noriAJAX.msg_error +': ' + errorThrown);
+			}	
+		});
+	});
+
 	$('#add-article').on('click', function() {
 		if($(this).hasClass('disabled')){
 			$('#nori_section')

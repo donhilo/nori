@@ -351,13 +351,17 @@ Ajax Functions
 
 function ajaxNori() {	
 	$articles = $_SESSION['articlesel'];		
-
-	if($articles):
+	if($_POST['edition'] == 'yes'):		
+		nori_makePdfEdition($_POST['edid']);
+		//nori_makePdfEdition($_POST['edid']);
+		//echo 'HELP MEEEE';
+		exit();	
+	elseif($articles):
 		if($_POST['forprint'] == 'yes'):
 			$extradata = $_POST['extradata'];			
 			nori_makePdf($articles, true, $extradata);						
-			exit();
-		else:		
+			exit();		
+		else:
 			nori_makePdf($articles);
 			exit();
 		endif;		
