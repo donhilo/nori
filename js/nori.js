@@ -1,7 +1,7 @@
 //General nori functions.
 
 //Populate article list main function, it accepts stuff.
-function populate(action, element) {
+function populate(action, element, callback) {
 	jQuery.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
@@ -12,11 +12,16 @@ function populate(action, element) {
 			success: function(data, textStatus, XMLHttpRequest) {
 				jQuery(element).empty().append(data);
 				sortableList();
+				callback();
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				jQuery(element).empty().append( noriAJAX.msg_error + ':' + errorThrown);	
 			}
-		});
+		});		
+}
+
+function applypane() {
+	jQuery('#nori_section').jScrollPane();	
 }
 
 function sortableList() {
@@ -79,7 +84,7 @@ jQuery(document).ready(function($) {
 			var popcommand = 'populate';
 		}
 
-		populate(popcommand, '#nori_make_renderbox .nori_articlelist');
+		populate(popcommand, '#nori_make_renderbox .nori_articlelist', function() {});
 
 		$.ajax({
 			type: 'POST',
@@ -259,7 +264,7 @@ jQuery(document).ready(function($) {
 					$(this).remove();
 				});
 				$('.noricounter').popover('show');
-				populate('onlypopulate', '.nori_snippet .nori_articlelist');									
+				populate('onlypopulate', '.nori_snippet .nori_articlelist', function(){});									
 				console.log('removed' + parentli.data('id'));
 					$.ajax({
 						type: 'POST',
@@ -316,9 +321,14 @@ jQuery(document).ready(function($) {
 					command: 'ajaxSection'				
 				},
 				success: function(data, textStatus, XMLHttpRequest) {
-					$('#nori_section').empty().append(data).slideDown(600);
-					populate('populateandsort', '#nori_make_renderbox ul.nori_articlelist');				
-
+					$('#nori_section')
+						.empty()
+						.append(data)
+						.slideDown(600, function() {							
+						});
+					populate('populateandsort', '#nori_make_renderbox ul.nori_articlelist',
+						applypane
+						);
 				}, 
 				error: function(data, textStatus, XMLHttpRequest) {
 					$('#nori_section').append('ERROR');

@@ -495,11 +495,22 @@ function noristylesandscripts() {
 		wp_register_script('jquery-form', NORI_URL . '/js/jquery.form.js', 'jquery');
 		wp_enqueue_script('jquery-form');
 
-		wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery', 'jquery-ui', 'jquery-form'));
+		wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery', 'jquery-ui', 'jquery-form', 'jscrollpane'));
 		wp_enqueue_script('norijs');
 
 		wp_register_script('bootstrap', NORI_URL . '/js/bootstrap.min.js');
 		wp_enqueue_script('bootstrap');
+
+		wp_register_script('mwheel', NORI_URL . '/js/jquery.mousewheel.js', array('jquery'));
+		wp_enqueue_script('mwheel');
+
+		wp_register_script('mwintent', NORI_URL . '/js/mwheelIntent.js', array('jquery', 'mwheel'));
+		wp_enqueue_script('mwintent');
+
+		wp_register_script('jscrollpane', NORI_URL . '/js/jquery.jscrollpane.min.js', array('jquery', 'mwheel', 'mwintent'));
+		wp_enqueue_script('jscrollpane');
+
+
 
 		wp_localize_script('norijs', 'noriAJAX', array(
 		 	'ajaxurl' => admin_url( 'admin-ajax.php' ),

@@ -22,7 +22,7 @@ span.ul-label {
 }
 
 .nori_wrapper .nori_articlecontainer {
-  padding:12px;
+  padding:20px 6px 6px 6px;
   background-color:rgba(255,255,255,0.2);
   border-radius:6px;
   position:relative;
@@ -42,6 +42,10 @@ ul.nori_articlelist li {
 	padding:4px 6px;	
 	cursor:pointer;
   border-bottom:1px dotted #555;
+}
+
+#nori_section ul.nori_articlelist {
+
 }
 
 .nori_wrapper input {
@@ -79,9 +83,9 @@ ul.nori_articlelist li {
   width:96%;
   z-index:7;
   box-shadow:0 1px 4px #444;
-  color:#f0f0f0;
-  max-height:500px;
-  overflow-y:scroll;
+  color:#f0f0f0; 
+  height:500px;
+  overflow: auto;   
 }
 
 .nori-css.nori_snippet .popover {
@@ -109,7 +113,8 @@ ul.nori_articlelist li {
 
 #nori_make_renderbox {
 	width:960px;
-  margin:16px auto 0; 
+  margin:16px auto 0;   
+  overflow:hidden;
 }
 
 #nori_make_renderbox button {
@@ -138,12 +143,14 @@ ul.nori_articlelist li {
 }
 
 #nori_make_renderbox .legend {
-  margin-top:12px;
+  margin-top:24px;
+  padding:12px;
+  background-color:rgba(0,0,0,0.5);
+  border-radius:6px;
  }
 
 #nori_make_renderbox .legend p {
-  font-size:14px;
-  font-style:italic;
+  font-size:12px;  
   color:#ccc;
 }
 
@@ -257,3 +264,124 @@ a.norimake-btn
 .ui-progressbar { height:2em; text-align: left; overflow: hidden; }
 .ui-progressbar .ui-progressbar-value {margin: -1px; height:100%; }
 
+/*
+ * CSS Styles that are needed by jScrollPane for it to operate correctly.
+ *
+ * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
+ * may not operate correctly without them.
+ */
+
+.jspContainer
+{
+  overflow: hidden;
+  position: relative;
+}
+
+.jspPane
+{
+  position: absolute;
+}
+
+.jspVerticalBar
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 100%;
+  background: red;
+}
+
+.jspHorizontalBar
+{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: red;
+}
+
+.jspVerticalBar *,
+.jspHorizontalBar *
+{
+  margin: 0;
+  padding: 0;
+}
+
+.jspCap
+{
+  display: none;
+}
+
+.jspHorizontalBar .jspCap
+{
+  float: left;
+}
+
+.jspTrack
+{
+  background: #555;
+  position: relative;
+}
+
+.jspDrag
+{
+  background: #333;
+  position: relative;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  border-bottom:1px solid #333;
+}
+
+.jspHorizontalBar .jspTrack,
+.jspHorizontalBar .jspDrag
+{
+  float: left;
+  height: 100%;
+}
+
+.jspArrow
+{
+  background: #50506d;
+  text-indent: -20000px;
+  display: block;
+  cursor: pointer;
+}
+
+.jspArrow.jspDisabled
+{
+  cursor: default;
+  background: #80808d;
+}
+
+.jspVerticalBar .jspArrow
+{
+  height: 16px;
+}
+
+.jspHorizontalBar .jspArrow
+{
+  width: 16px;
+  float: left;
+  height: 100%;
+}
+
+.jspVerticalBar .jspArrow:focus
+{
+  outline: none;
+}
+
+.jspCorner
+{
+  background: #eeeef4;
+  float: left;
+  height: 100%;
+}
+
+/* Yuk! CSS Hack for IE6 3 pixel bug :( */
+* html .jspCorner
+{
+  margin: 0 -3px 0 0;
+}
