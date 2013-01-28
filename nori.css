@@ -6,6 +6,7 @@ h3.nori_headtitle {
 
 .nori-css ul.nori_articlelist {
   margin:0;  
+  min-height:200px;
 }
 
 span.ul-label {
@@ -13,12 +14,12 @@ span.ul-label {
   top:0;
   right:0;
   border-radius:0 6px 0 6px;
-  background-color:rgba(255,255,255,0.1);
+  background-color:#4B9EC5;
   text-transform: uppercase;
   font-size:11px;
   font-weight:bold;
-  color:#333;
-  padding:3px;
+  color:white;
+  padding:3px 6px;
 }
 
 .nori_wrapper .nori_articlecontainer {
@@ -28,8 +29,16 @@ span.ul-label {
   position:relative;
 }
 
+.formwrapper {
+  background-color:rgba(255,255,255,0.2);
+  padding:6px;
+  border-radius:6px 0 0 6px;
+}
+
+
+
 .introstuff {  
-  width:420px;
+  width:460px;
   float:left;
 }
 

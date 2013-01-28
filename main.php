@@ -242,7 +242,7 @@ function nori_centralOps($render = false) {
 		
 		if($render == true):
 			echo '<div class="nori_articlecontainer">';
-			echo '<span class="ul-label">Artículos seleccionados</span>';		
+			echo '<span class="ul-label"><i class="icon-white icon-shopping-cart"></i> Canasta de artículos</span>';		
 			echo '<ul class="nori_articlelist" data-process="incheckout">';
 			
 		else:
@@ -263,11 +263,11 @@ function nori_centralOps($render = false) {
 function nori_selectForm($render) {
 	global $post;	
 	//Adds Form to article selection
-		printf('<div class="formwrapper nori-css"><br/>');												
+		printf('<div class="formwrapper nori-css">');												
 					
 			if($render == true):				
 
-				printf('<button class="btn btn-success" id="generar-ajax"><i class="icon-book icon-white"></i> ' . NORIMSG_GENERATE . '</button>');
+				printf('<button class="btn btn-primary" id="generar-ajax"><i class="icon-book icon-white"></i> ' . NORIMSG_GENERATE . '</button>');
 				//printf('<span class="nori-btn btn btn-success" id="generar-ajax-imprenta"><i class="icon-book icon-white"></i> ' . NORIMSG_SENDTOPRINT . '</span>');				
 
 			else:

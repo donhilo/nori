@@ -3190,12 +3190,15 @@ textarea.span1,
 
 .nori-css .btn:hover,
 .nori-css .btn:active,
-.nori-css .btn.active,
-.nori-css .btn.disabled,
-.nori-css .btn[disabled] {
+.nori-css .btn.active {
   color: #333333;
   background-color: #e6e6e6;
   *background-color: #d9d9d9;
+}
+
+.nori-css .btn.disabled,
+.nori-css .btn[disabled] {
+  background-color: #e6e6e6;
 }
 
 .nori-css .btn:active,
@@ -3235,6 +3238,7 @@ textarea.span1,
 .nori-css .btn.disabled,
 .nori-css .btn[disabled] {
   cursor: default;
+  background-color: #555;
   background-image: none;
   opacity: 0.65;
   filter: alpha(opacity=65);
@@ -3335,12 +3339,15 @@ textarea.span1,
 
 .nori-css .btn-primary:hover,
 .nori-css .btn-primary:active,
-.nori-css .btn-primary.active,
-.nori-css .btn-primary.disabled,
-.nori-css .btn-primary[disabled] {
+.nori-css .btn-primary.active {
   color: #ffffff;
   background-color: #ca4122;
   *background-color: #b43a1e;
+}
+
+.nori-css .btn-primary.disabled,
+.nori-css .btn-primary[disabled] {
+  background-color: #836e69;
 }
 
 .nori-css .btn-primary:active,
@@ -3367,12 +3374,15 @@ textarea.span1,
 
 .nori-css .btn-warning:hover,
 .nori-css .btn-warning:active,
-.nori-css .btn-warning.active,
-.nori-css .btn-warning.disabled,
-.nori-css .btn-warning[disabled] {
+.nori-css .btn-warning.active {
   color: #ffffff;
   background-color: #f89406;
   *background-color: #df8505;
+}
+
+.nori-css .btn-warning.disabled,
+.nori-css .btn-warning[disabled] {
+  background-color: #ac8752;
 }
 
 .nori-css .btn-warning:active,
@@ -3399,12 +3409,15 @@ textarea.span1,
 
 .nori-css .btn-danger:hover,
 .nori-css .btn-danger:active,
-.nori-css .btn-danger.active,
-.nori-css .btn-danger.disabled,
-.nori-css .btn-danger[disabled] {
+.nori-css .btn-danger.active {
   color: #ffffff;
   background-color: #bd362f;
   *background-color: #a9302a;
+}
+
+.nori-css .btn-danger.disabled,
+.nori-css .btn-danger[disabled] {
+  background-color: #767676;
 }
 
 .nori-css .btn-danger:active,
@@ -3431,12 +3444,15 @@ textarea.span1,
 
 .nori-css .btn-success:hover,
 .nori-css .btn-success:active,
-.nori-css .btn-success.active,
-.nori-css .btn-success.disabled,
-.nori-css .btn-success[disabled] {
+.nori-css .btn-success.active {
   color: #ffffff;
   background-color: #46981d;
   *background-color: #3c8319;
+}
+
+.nori-css .btn-success.disabled,
+.nori-css .btn-success[disabled] {
+  background-color: #586253;
 }
 
 .nori-css .btn-success:active,
@@ -3463,12 +3479,15 @@ textarea.span1,
 
 .nori-css .btn-info:hover,
 .nori-css .btn-info:active,
-.nori-css .btn-info.active,
-.nori-css .btn-info.disabled,
-.nori-css .btn-info[disabled] {
+.nori-css .btn-info.active {
   color: #ffffff;
   background-color: #4fa7d0;
   *background-color: #3b9dcb;
+}
+
+.nori-css .btn-info.disabled,
+.nori-css .btn-info[disabled] {
+  background-color: #909090;
 }
 
 .nori-css .btn-info:active,
@@ -3495,12 +3514,15 @@ textarea.span1,
 
 .nori-css .btn-inverse:hover,
 .nori-css .btn-inverse:active,
-.nori-css .btn-inverse.active,
-.nori-css .btn-inverse.disabled,
-.nori-css .btn-inverse[disabled] {
+.nori-css .btn-inverse.active {
   color: #ffffff;
   background-color: #222222;
   *background-color: #151515;
+}
+
+.nori-css .btn-inverse.disabled,
+.nori-css .btn-inverse[disabled] {
+  background-color: #222222;
 }
 
 .nori-css .btn-inverse:active,
@@ -4591,12 +4613,15 @@ textarea.span1,
 
 .nori-css .navbar .btn-navbar:hover,
 .nori-css .navbar .btn-navbar:active,
-.nori-css .navbar .btn-navbar.active,
-.nori-css .navbar .btn-navbar.disabled,
-.nori-css .navbar .btn-navbar[disabled] {
+.nori-css .navbar .btn-navbar.active {
   color: #ffffff;
   background-color: #e5e5e5;
   *background-color: #d9d9d9;
+}
+
+.nori-css .navbar .btn-navbar.disabled,
+.nori-css .navbar .btn-navbar[disabled] {
+  background-color: #e5e5e5;
 }
 
 .nori-css .navbar .btn-navbar:active,
@@ -4850,12 +4875,15 @@ textarea.span1,
 
 .nori-css .navbar-inverse .btn-navbar:hover,
 .nori-css .navbar-inverse .btn-navbar:active,
-.nori-css .navbar-inverse .btn-navbar.active,
-.nori-css .navbar-inverse .btn-navbar.disabled,
-.nori-css .navbar-inverse .btn-navbar[disabled] {
+.nori-css .navbar-inverse .btn-navbar.active {
   color: #ffffff;
   background-color: #040404;
   *background-color: #000000;
+}
+
+.nori-css .navbar-inverse .btn-navbar.disabled,
+.nori-css .navbar-inverse .btn-navbar[disabled] {
+  background-color: #040404;
 }
 
 .nori-css .navbar-inverse .btn-navbar:active,
