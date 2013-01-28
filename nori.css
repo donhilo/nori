@@ -25,22 +25,18 @@ span.ul-label {
 
 .nori_wrapper .nori_articlecontainer {
   padding:20px 6px 6px 6px;
-  background-color:rgba(255,255,255,0.2);
+  background-color:rgba(255,255,255,0.65);
   border-radius:6px;
   position:relative;
+  color:#333;
 }
 
 .formwrapper {
-  background-color:rgba(255,255,255,0.2);
+  background-color:rgba(255,255,255,0.65);
   padding:6px;
   border-radius:6px 0 0 6px;
   margin-top:44px;
-}
-
-#trigger-norisection.active {
-  background-color:#586253;
-  opacity:0.65;
-  box-shadow:none;
+  color:#333;
 }
 
 .introstuff {  

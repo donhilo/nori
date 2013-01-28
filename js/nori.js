@@ -111,8 +111,8 @@ jQuery(document).ready(function($) {
 	$(document).on('click', '.btn[data-function="toggle-section"]', function() {
 		$('#nori_section').slideUp(600).empty();
 		$('#trigger-norisection')
-			.removeClass('active')
-			.addClass('inactive')			
+			.removeClass('btn-inverse')
+			.addClass('inactive btn-primary')			
 			.html('<i class="icon-cog icon-white"></i> Crear PDF');
 	});
 
@@ -292,7 +292,7 @@ jQuery(document).ready(function($) {
 
 	//Boton para activar sección de contenidos desplegable
 
-	$('#trigger-norisection.active').click(function(){
+	$('#trigger-norisection.btn-inverse').click(function(){
 		$('#nori_section')
 			.empty()		
 			.slideUp(600);
@@ -306,17 +306,18 @@ jQuery(document).ready(function($) {
 				.slideDown(600)
 				.delay(1000)
 				.slideUp(600);
-		} else if($(this).hasClass('active')) {
+		} else if($(this).hasClass('btn-inverse')) {
 			$('#nori_section')				
 				.slideUp(600)
 				.empty();
 				$(this)
-					.removeClass('active')					
+					.removeClass('btn-inverse')
+					.addClass('btn-primary')					
 					.html('<i class="icon-cog icon-white"></i> Crear PDF');										
 		} else {
 			$(this)
-				.removeClass('inactive')
-				.addClass('active')				
+				.removeClass('inactive btn-primary')
+				.addClass('btn-inverse')				
 				.html('<i class="icon-share-alt icon-white"></i> Volver');				
 			$.ajax({
 				type: 'POST',

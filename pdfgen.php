@@ -745,18 +745,14 @@ function nori_makePdf($postobj, $use = 'web', $extradata = NULL) {
 			sendPDFforPrint($extradata, $pdflink, NORI_PRINTER_DUDE, $numpages);
 		break;
 		case('edition'):
-			//Check if file exists (this generation is expensive.)
-			if(!file_exists(NORI_FILESPATH . 'edicion-arte-y-critica-org-'.$extradata.'.pdf')){				
+			//Check if file exists (this generation is expensive.)			
 					$pdf->Output(NORI_FILESPATH .'edicion-arte-y-critica-org-'.$extradata.'.pdf', 'F');				
 					$pdflink = NORI_FILESURL . 'edicion-arte-y-critica-org-'.$extradata.'.pdf';
 					//Print stuff in file
 					update_post_meta( $extradata, 'edicion_url', $pdflink);
 					echo '<h3>Archivo de edición Generado</h3>';				
 					echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'edicion-arte-y-critica-org-'.$extradata.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
-					echo '<p>También se ha añadido la URL del archivo a un campo personalizado que se vinculará automáticamente al número de edición</p>';
-				} else {
-					echo '<h3>Ya habías generado antes el archivo de edición</h3>';
-				}
+					echo '<p>También se ha añadido la URL del archivo a un campo personalizado que se vinculará automáticamente al número de edición</p>';				
 		break;
 	}
 	

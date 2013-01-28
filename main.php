@@ -371,9 +371,9 @@ add_action('wp_ajax_nopriv_ajaxNori', 'ajaxNori');
 //Single item layout
 function articleUnit($id, $checkout = false, $onlypop = false) {
 	if($checkout == true && $onlypop == false):
-		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i title="Arrastra para cambiar orden de articulo" class="icon-move icon-white"></i> ' . get_the_title(intval($id)) . ' <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash icon-white"></i></li>';
+		echo '<li class="articleUnit incheckout" data-id="' . $id .'" id="selarticle-' . $id .'"> <i title="Arrastra para cambiar orden de articulo" class="icon-move"></i> ' . get_the_title(intval($id)) . ' <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash"></i></li>';
 	elseif($checkout == false && $onlypop == false):
-		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash icon-white"></i></li>';
+		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . ' <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash"></i></li>';
 	else:
 		echo '<li class="articleUnit" data-id="' . $id .'" id="selarticle-' . $id .'"> ' . get_the_title(intval($id)) . '  <i title="Click para eliminar artículo de la selección" class="nori-ui articledel icon-trash"></i></li>';
 	endif;
@@ -489,44 +489,28 @@ function noristylesandscripts() {
 		wp_register_style('bootstrap-nori', NORI_URL . '/bootstrap-nori.css');
 		wp_enqueue_style( 'bootstrap-nori');
 
-		// wp_register_script('jquery-ui', NORI_URL . '/js/jquery-ui-1.9.2.custom.min.js', 'jquery');
-		// wp_enqueue_script('jquery-ui');				
+		wp_register_script('jquery-ui', NORI_URL . '/js/jquery-ui-1.9.2.custom.min.js', 'jquery');
+		wp_enqueue_script('jquery-ui');				
 
-		// wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery', 'jquery-ui', 'jscrollpane'));
-		// wp_enqueue_script('norijs');
+		wp_register_script('norijs', NORI_URL . '/js/nori.js', array('jquery', 'jquery-ui', 'jscrollpane'));
+		wp_enqueue_script('norijs');
 
-		// wp_register_script('bootstrap', NORI_URL . '/js/bootstrap.min.js');
-		// wp_enqueue_script('bootstrap');
+		wp_register_script('bootstrap', NORI_URL . '/js/bootstrap.min.js');
+		wp_enqueue_script('bootstrap');
 
-		// wp_register_script('mwheel', NORI_URL . '/js/jquery.mousewheel.js', array('jquery'));
-		// wp_enqueue_script('mwheel');
+		wp_register_script('mwheel', NORI_URL . '/js/jquery.mousewheel.js', array('jquery'));
+		wp_enqueue_script('mwheel');
 
-		// wp_register_script('mwintent', NORI_URL . '/js/mwheelIntent.js', array('jquery', 'mwheel'));
-		// wp_enqueue_script('mwintent');
+		wp_register_script('mwintent', NORI_URL . '/js/mwheelIntent.js', array('jquery', 'mwheel'));
+		wp_enqueue_script('mwintent');
 
-		// wp_register_script('jscrollpane', NORI_URL . '/js/jquery.jscrollpane.min.js', array('jquery', 'mwheel', 'mwintent'));
-		// wp_enqueue_script('jscrollpane');
+		wp_register_script('jscrollpane', NORI_URL . '/js/jquery.jscrollpane.min.js', array('jquery', 'mwheel', 'mwintent'));
+		wp_enqueue_script('jscrollpane');
 
-		wp_register_script('norimin', NORI_URL . '/js/nori.min.js', array('jquery'));
-		wp_enqueue_script('norimin');
+		// wp_register_script('norimin', NORI_URL . '/js/nori.min.js', array('jquery'));
+		// wp_enqueue_script('norimin');
 
-		wp_localize_script('norimin', 'noriAJAX', array(
-		 	'ajaxurl' => admin_url( 'admin-ajax.php' ),
-		 	'noriurl' => NORI_URL,
-		 	'msg_generating' => NORIMSG_GENERATING,
-		 	'msg_error' => NORIMSG_ERROR,
-		 	'msg_updatedorder' => NORIMSG_UPDATEDORDER,
-		 	'msg_nophone' => NORIMSG_NOPHONE,
-		 	'msg_noaddress' => NORIMSG_NOADDRESS,
-		 	'msg_nomail' => NORIMSG_NOMAIL,
-		 	'msg_noname' => NORIMSG_NONAME,
-		 	'msg_loadingselection' => NORIMSG_LOADINGSELECTION,
-		 	'msg_novalidmail' => NORIMSG_NOVALIDMAIL,
-		 	'msg_timeexplanation' => NORIMSG_TIMEEXPLANATION
-		 	));
-
-
-		// wp_localize_script('norijs', 'noriAJAX', array(
+		// wp_localize_script('norimin', 'noriAJAX', array(
 		//  	'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		//  	'noriurl' => NORI_URL,
 		//  	'msg_generating' => NORIMSG_GENERATING,
@@ -540,6 +524,22 @@ function noristylesandscripts() {
 		//  	'msg_novalidmail' => NORIMSG_NOVALIDMAIL,
 		//  	'msg_timeexplanation' => NORIMSG_TIMEEXPLANATION
 		//  	));
+
+
+		wp_localize_script('norijs', 'noriAJAX', array(
+		 	'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		 	'noriurl' => NORI_URL,
+		 	'msg_generating' => NORIMSG_GENERATING,
+		 	'msg_error' => NORIMSG_ERROR,
+		 	'msg_updatedorder' => NORIMSG_UPDATEDORDER,
+		 	'msg_nophone' => NORIMSG_NOPHONE,
+		 	'msg_noaddress' => NORIMSG_NOADDRESS,
+		 	'msg_nomail' => NORIMSG_NOMAIL,
+		 	'msg_noname' => NORIMSG_NONAME,
+		 	'msg_loadingselection' => NORIMSG_LOADINGSELECTION,
+		 	'msg_novalidmail' => NORIMSG_NOVALIDMAIL,
+		 	'msg_timeexplanation' => NORIMSG_TIMEEXPLANATION
+		 	));
 	endif;
 	
 }
