@@ -286,6 +286,12 @@ jQuery(document).ready(function($) {
 
 	//Boton para activar sección de contenidos desplegable
 
+	$('#trigger-norisection.active').click(function(){
+		$('#nori_section')
+			.empty()		
+			.slideUp(600);
+	});
+
 	$('#trigger-norisection.inactive').click(function(){
 		if($(this).hasClass('disabled')) {
 			$('#nori_section')
@@ -294,6 +300,11 @@ jQuery(document).ready(function($) {
 				.slideDown(600)
 				.delay(1000)
 				.slideUp(600);
+		} else if($(this).hasClass('active')) {
+			$('#nori_section')				
+				.slideUp(600)
+				.empty();
+				$(this).removeClass('active');					
 		} else {
 			$(this).removeClass('inactive');
 			$(this).addClass('active');

@@ -241,21 +241,20 @@ function nori_centralOps($render = false) {
 		echo '<div class="nori_wrapper nori-css">';
 		
 		if($render == true):
-			echo '<ul class="nori_articlelist" data-process="incheckout">';		
+			echo '<div class="nori_articlecontainer">';
+			echo '<span class="ul-label">Artículos seleccionados</span>';		
+			echo '<ul class="nori_articlelist" data-process="incheckout">';
+			
 		else:
-			echo '<h4>' . NORIMSG_SYSTEMTITLE . '</h4>';
-			if(isset($_SESSION['articlesel'])):
-				echo '<p>' . NORIMSG_LISTTITLE . '</p>';
-			else:
-				echo '<p>' . NORIMSG_SHORTINTRO . '</p>';
-			endif;
+			echo '<h4>' . NORIMSG_SYSTEMTITLE . '</h4>';		
 			echo '<ul class="nori_articlelist" data process="compiling">';		
 		endif;
 		echo '</ul>';
-
-		//Show Form for adding articles
-
-		nori_selectForm($render);
+		echo '<div class="legend">';
+			echo '<p> <i class="icon-white icon-move"></i> ' . NORIMSG_REORDERINTRO . ' </p>';
+			echo '<p> <i class="icon-white icon-trash"></i> ' . NORIMSG_TRASHINTRO . '</p>';
+		echo '</div>';		
+		echo '</div>';
 
 		echo '</div><!--Nori Wrapper-->';	
 }
@@ -312,24 +311,21 @@ add_action('template_redirect', 'noriSection', 1);
 function noriSection_ajax() {
 	echo '<div id="nori_make_renderbox">';
 	echo '<div>';
-	echo '<h1>' . NORIMSG_SYSTEMTITLE . '</h1>';
+	echo '<h1>' . NORIMSG_SYSTEMTITLE . ' <button class="btn btn-inverse btn-mini" data-function="toggle-section"><i class="icon-white icon-remove"></i> Cerrar</span></h1>';
 	echo '<div class="introstuff">';
 	echo '<p> ' . NORIMSG_RENDERINTRO . '</p>';
-	echo '<p> ' . NORIMSG_TIMEWARNING . '</p>';
-	echo '<p> ' . NORIMSG_LISTTITLE .  '</p>';
+	echo '<p> ' . NORIMSG_TIMEWARNING . '</p>';	
+
+	//Show Form for generation
+		nori_selectForm(true);	
 	echo '</div>';
 
-    nori_centralOps(true);
-
-	echo '<div class="legend">';
-	echo '<p> <i class="icon-white icon-move"></i> ' . NORIMSG_REORDERINTRO . ' </p>';
-	echo '<p> <i class="icon-white icon-trash"></i> ' . NORIMSG_TRASHINTRO . '</p>';
-	echo '</div>';
+    nori_centralOps(true);	
 
 	echo '<div id="nori_result">';
 	echo '</div>';
 	echo '</div>';
-	echo '<button class="btn btn-primary" data-function="toggle-section"><i class="icon-white icon-remove"></i> Cerrar</button>';
+	//echo '<button class="btn btn-primary" data-function="toggle-section"><i class="icon-white icon-remove"></i> Cerrar</button>';
 	echo '</div>';	
 	exit();
 }

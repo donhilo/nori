@@ -5,17 +5,36 @@ h3.nori_headtitle {
 				}
 
 .nori-css ul.nori_articlelist {
-  margin:0;
+  margin:0;  
 }
 
-.nori_wrapper ul.nori_articlelist {
+span.ul-label {
+  position:absolute;
+  top:0;
+  right:0;
+  border-radius:0 6px 0 6px;
+  background-color:rgba(255,255,255,0.1);
+  text-transform: uppercase;
+  font-size:11px;
+  font-weight:bold;
+  color:#333;
+  padding:3px;
+}
+
+.nori_wrapper .nori_articlecontainer {
   padding:12px;
   background-color:rgba(255,255,255,0.2);
   border-radius:6px;
+  position:relative;
 }
 
-.introstuff {
-  line-height:1.2em;
+.introstuff {  
+  width:420px;
+  float:left;
+}
+
+.introstuff p {
+  line-height:1.4em;
 }
 
 ul.nori_articlelist li {
@@ -30,7 +49,7 @@ ul.nori_articlelist li {
 			}
 
 .nori_snippet .btn {		
-  margin:5px 3px 0 0;
+  margin:9px 3px 0 0;
 }
 
 .nori-ajaxstatus {
@@ -61,6 +80,8 @@ ul.nori_articlelist li {
   z-index:7;
   box-shadow:0 1px 4px #444;
   color:#f0f0f0;
+  max-height:500px;
+  overflow-y:scroll;
 }
 
 .nori-css.nori_snippet .popover {
@@ -96,7 +117,9 @@ ul.nori_articlelist li {
 }
 
 #nori_make_renderbox .nori_wrapper {
-  margin:24px 0;     
+  margin:0;
+  width:500px;
+  float:right;     
 }
 
 #nori_make_renderbox p.updatedorder {
@@ -113,6 +136,10 @@ ul.nori_articlelist li {
   font-size:16px;
   margin:0 0 5px 0;
 }
+
+#nori_make_renderbox .legend {
+  margin-top:12px;
+ }
 
 #nori_make_renderbox .legend p {
   font-size:14px;
@@ -137,6 +164,7 @@ ul.nori_articlelist li {
   border-right:1px solid #282828;
   border-left:1px solid #282828;
   padding-bottom:0;
+  height:47px;
 }
 
 .nori-css p.norititle {

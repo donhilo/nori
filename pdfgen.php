@@ -735,7 +735,7 @@ function nori_makePdf($postobj, $use = 'web', $extradata = NULL) {
 			$pdf->Output(NORI_FILESPATH .'arte-y-critica-org-'.$fileid.'.pdf', 'F');
 			echo '<div class="nori-ajaxstatus nori-success">';
 			echo '<h3>'. NORIMSG_FILEREADY .'</h3>';				
-			echo '<p><a class="btn btn-success" href="'.NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
+			echo '<p><a class="btn btn-primary" href="'.NORI_FILESURL . 'arte-y-critica-org-'.$fileid.'.pdf"><i class="icon-download-alt icon-white"></i> ' . NORIMSG_DOWNLOAD .'</a></p>';			
 			echo '</div>';
 		break;
 		case('print'):
