@@ -110,9 +110,10 @@ jQuery(document).ready(function($) {
 
 	$(document).on('click', '.btn[data-function="toggle-section"]', function() {
 		$('#nori_section').slideUp(600).empty();
-		$('#trigger-norisection').removeClass('active');
-		$('#trigger-norisection').addClass('inactive');
-
+		$('#trigger-norisection')
+			.removeClass('active')
+			.addClass('inactive')			
+			.html('<i class="icon-cog icon-white"></i> Crear PDF');
 	});
 
 	$(document).on('click', '#generar-ajax', function() {
@@ -309,10 +310,14 @@ jQuery(document).ready(function($) {
 			$('#nori_section')				
 				.slideUp(600)
 				.empty();
-				$(this).removeClass('active');					
+				$(this)
+					.removeClass('active')					
+					.html('<i class="icon-cog icon-white"></i> Crear PDF');										
 		} else {
-			$(this).removeClass('inactive');
-			$(this).addClass('active');
+			$(this)
+				.removeClass('inactive')
+				.addClass('active')				
+				.html('<i class="icon-share-alt icon-white"></i> Volver');				
 			$.ajax({
 				type: 'POST',
 				url: noriAJAX.ajaxurl,
