@@ -111,13 +111,13 @@ jQuery(document).ready(function($) {
 
 							},
 							error: function(XMLHttpRequest, textStatus, errorThrown) {
-								articlecount.empty().append(errorThrown);	
+								articlecount.empty().append('Error:' + errorThrown);	
 							}
 						});
 								});
 							}, 
 							error: function(XMLHttpRequest, textStatus, errorThrown) {
-								$('#ajaxsnippet').append(errorThrown);
+								$('#ajaxsnippet').append('Error:' +  errorThrown);
 							}
 					})
 		
