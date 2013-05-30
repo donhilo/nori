@@ -71,40 +71,56 @@ jQuery(document).ready(function($) {
 	printform.hide();	
 
 
+
 	//Llenar articulos y contador de artículos - autoejecutable
 	(function() {
-
-		var articlelist = $('.nori_articlelist');		
-		
-		articlelist.append('<p>' + noriAJAX.msg_loadingselection +'</p>');
-		
-		if(articlelist.data('process') == 'incheckout') {
-			var popcommand = 'populateandsort';
-		} else {
-			var popcommand = 'populate';
-		}
-
-		populate(popcommand, '#nori_make_renderbox .nori_articlelist', function() {});
 
 		$.ajax({
 			type: 'POST',
 			url: noriAJAX.ajaxurl,
 			data: {
-				action: 'ajaxSessionNori',
-				command: 'count'
+				action: 'nori_snippet'
 			},
 			success: function(data, textStatus, XMLHttpRequest) {
-				if(data.length > 0){
-					articlecount.empty().append(data);
-				} else {
-					articlecount.empty().append('0');
-				}
+				$('#ajaxsnippet').append(data, function() {
+					var articlelist = $('.nori_articlelist');		
+		
+						articlelist.append('<p>' + noriAJAX.msg_loadingselection +'</p>');
+						
+						if(articlelist.data('process') == 'incheckout') {
+							var popcommand = 'populateandsort';
+						} else {
+							var popcommand = 'populate';
+						}
 
-			},
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				articlecount.empty().append(errorThrown);	
-			}
-		});
+						populate(popcommand, '#nori_make_renderbox .nori_articlelist', function() {});
+
+						$.ajax({
+							type: 'POST',
+							url: noriAJAX.ajaxurl,
+							data: {
+								action: 'ajaxSessionNori',
+								command: 'count'
+							},
+							success: function(data, textStatus, XMLHttpRequest) {
+								if(data.length > 0){
+									articlecount.empty().append(data);
+								} else {
+									articlecount.empty().append('0');
+								}
+
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								articlecount.empty().append(errorThrown);	
+							}
+						});
+								});
+							}, 
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								$('#ajaxsnippet').append(errorThrown);
+							}
+					})
+		
 	})();
 	
 
