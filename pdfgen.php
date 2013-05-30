@@ -286,6 +286,11 @@ class noriPDF extends TCPDF {
 			);
 		$blocks[] = 
 		array(
+			'ISSN: 0719-3270',
+			'Santiago de Chile'
+			);
+		$blocks[] = 
+		array(
 			'Asesoría digital:',
 			'A Pie',
 			'escribenos@apie.cl',

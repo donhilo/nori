@@ -50,6 +50,8 @@ define( 'NORI_COSTPERPAGE', 400);
 define( 'NORI_MAXPAGES', 80);
 define( 'NORI_MAXARTICLES', 15);
 define( 'NORI_ALPHA', true);
+define( 'NORI_ISSN', '0719-3270');
+define( 'NORI_ISSN_LOCATION', 'Santiago de Chile');
 
 //Development constant to enable only registered users to use the app.
 
